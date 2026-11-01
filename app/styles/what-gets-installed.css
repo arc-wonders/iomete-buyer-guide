@@ -1,0 +1,104 @@
+/* Owned by the what-gets-installed page. Everything is scoped under .wgi (the page's figure). */
+
+.wgi { --wgi-mono: var(--font-mono), ui-monospace, monospace; }
+.wgi-sec { margin-top: 56px; }
+.wgi-eyebrow { font-family: var(--wgi-mono); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px; }
+
+/* ---------- install diagram ---------- */
+.wgi-diagram { position: relative; }
+.wgi-diagram svg { width: 100%; height: auto; display: block; overflow: visible; }
+.wgi-narrow { display: none !important; }
+@media (max-width: 640px) {
+  .wgi-wide { display: none !important; }
+  .wgi-narrow { display: block !important; }
+}
+.wgi-hit { cursor: pointer; outline: none; }
+.wgi-hit > rect:first-child { transition: filter .2s, opacity .2s; }
+.wgi-hit:hover > rect:first-child, .wgi-hit:focus-visible > rect:first-child { filter: brightness(.95) drop-shadow(0 0 0 #2d382d); }
+.wgi-hit:focus-visible > rect:first-child { stroke: #2d382d; stroke-width: 2; }
+
+.wgi-replay { position: absolute; right: 0; top: 0; font-family: var(--wgi-mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); padding: 6px 2px; opacity: 0; transition: opacity .3s, color .2s; }
+.wgi-diagram.is-on .wgi-replay { opacity: 1; transition-delay: 2s; }
+.wgi-replay:hover { color: var(--ink); }
+
+/* hidden until the picture is in view, then played in order (--d = delay) */
+.wgi-a, .wgi-draw, .wgi-flow { opacity: 0; }
+.wgi-a { transform-box: fill-box; transform-origin: center; }
+.wgi-diagram.is-on .wgi-a { animation: wgi-rise .6s cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
+.wgi-diagram.is-on .wgi-pop { animation-name: wgi-pop; }
+.wgi-diagram.is-on .wgi-frame { animation-name: wgi-fade; animation-duration: .8s; }
+.wgi-diagram.is-on .wgi-yours { animation-name: wgi-yours; animation-duration: .9s; }
+.wgi-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.wgi-diagram.is-on .wgi-draw { opacity: 1; animation: wgi-draw .6s ease-out var(--d, 0s) both; }
+.wgi-flow { stroke-dasharray: 3 14; stroke-linecap: round; }
+.wgi-diagram.is-on .wgi-flow { animation: wgi-fade .4s ease var(--d, 0s) forwards, wgi-flow 1.1s linear var(--d, 0s) infinite; }
+.wgi-exec { transform-box: fill-box; transform-origin: center; }
+.wgi-diagram.is-on .wgi-exec { animation: wgi-exec 2.4s ease-in-out calc(3s + var(--d, 0s)) infinite; }
+
+.wgi-diagram.is-done .wgi-a, .wgi-diagram.is-done .wgi-draw { animation: none; opacity: 1; stroke-dashoffset: 0; }
+.wgi-diagram.is-done .wgi-flow { opacity: 1; animation: wgi-flow 1.1s linear infinite; }
+
+@keyframes wgi-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes wgi-pop { 0% { opacity: 0; transform: translateY(8px) scale(.94); } 70% { opacity: 1; transform: scale(1.015); } 100% { opacity: 1; transform: none; } }
+@keyframes wgi-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wgi-yours { 0% { opacity: 0; transform: translateY(12px); } 60% { opacity: 1; transform: none; filter: drop-shadow(0 0 10px rgba(211,245,44,.9)); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes wgi-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes wgi-flow { from { stroke-dashoffset: 17; } to { stroke-dashoffset: 0; } }
+@keyframes wgi-exec { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* ---------- screen showcase ---------- */
+.wgi-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -2px 14px; padding: 2px; }
+.wgi-tabs::-webkit-scrollbar { display: none; }
+.wgi-tabs button { position: relative; flex: 0 0 auto; display: inline-flex; align-items: baseline; gap: 8px; padding: 10px 16px 12px; border-radius: 10px; font-size: .95rem; color: var(--ink-2); overflow: hidden; transition: background .2s, color .2s; }
+.wgi-tabs button:hover { background: var(--soft); color: var(--ink); }
+.wgi-tabs button.on { background: #2d382d; color: #fff; }
+.wgi-tabs .n { font-family: var(--wgi-mono); font-size: .72rem; color: var(--ink-3); }
+.wgi-tabs button.on .n { color: var(--lime); }
+.wgi-tabs .bar { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: var(--lime); transform-origin: left; transform: scaleX(1); }
+.wgi-show.is-auto .wgi-tabs .bar { animation: wgi-bar linear both; }
+@keyframes wgi-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.wgi-stage { border-radius: 16px; background: #202020; padding: 0 10px 10px; box-shadow: 0 30px 60px -30px rgba(29,33,29,.45), 0 1px 0 rgba(0,0,0,.04); }
+.wgi-chrome { display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 6px; }
+.wgi-chrome i { width: 10px; height: 10px; border-radius: 50%; background: #474b47; }
+.wgi-chrome span { margin-left: 10px; font-family: var(--wgi-mono); font-size: .75rem; color: #a3a8a1; letter-spacing: .02em; }
+
+/* crop maths: show the region starting at (x, y) that is w wide, of a 5:3 image */
+.wgi-crop { --x: var(--xd); --y: var(--yd); --w: var(--wd); }
+.wgi .wgi-shot .shot-frame { aspect-ratio: 16 / 9; border-radius: 8px; box-shadow: none; background: #fff; }
+.wgi .wgi-shot .shot-frame img {
+  position: absolute; left: 0; top: 0; max-width: none; object-fit: fill;
+  width: calc(100% / var(--w)) !important; height: auto !important;
+  margin-left: calc(var(--x) / var(--w) * -100%);
+  margin-top: calc(var(--y) / var(--w) * -60%); /* 60% = 3/5, the image's height:width */
+  transform: none !important;
+  animation: wgi-shot-in .5s ease both;
+}
+.wgi .wgi-shot .shot-zoom { opacity: 1; background: var(--lime); color: var(--ink); }
+.wgi .wgi-shot > figcaption { display: none; }
+@keyframes wgi-shot-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+.wgi-cap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 16px; animation: wgi-fade .4s ease both; }
+.wgi-cap p { font-size: 1.15rem; line-height: 1.4; color: var(--ink-2); }
+.wgi-cap p b { color: var(--ink); font-weight: 500; }
+.wgi-hint { font-size: .85rem; color: var(--ink-3); white-space: nowrap; }
+.wgi-cap .tiles { margin-top: 0; }
+
+.wgi-deploy { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .wgi-sec { margin-top: 44px; }
+  .wgi-crop { --x: var(--xm); --y: var(--ym); --w: var(--wm); }
+  .wgi .wgi-shot .shot-frame { aspect-ratio: 4 / 3; }
+  .wgi-stage { padding: 0 6px 6px; border-radius: 14px; }
+  .wgi-replay { position: static; display: block; margin: 6px 0 0 auto; }
+  .wgi-tabs button { padding: 9px 13px 11px; font-size: .9rem; }
+  .wgi-cap p { font-size: 1.02rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wgi-a, .wgi-draw, .wgi-flow { opacity: 1 !important; animation: none !important; stroke-dashoffset: 0; }
+  .wgi-flow { opacity: 0 !important; }
+  .wgi-exec, .wgi .wgi-shot .shot-frame img, .wgi-cap, .wgi-tabs .bar { animation: none !important; }
+  .wgi-replay { display: none; }
+}

@@ -63,7 +63,8 @@ export function BotDock({
     <div className="dock no-print" role="dialog" aria-label="Ask about IOMETE">
       <div className="dock-panel">
         <div className="dock-head">
-          <span className="eyebrow">Answers from public sources only</span>
+          <svg width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" stroke="#2d382d" strokeWidth="1.5" /></svg>
+          <span className="dock-title"><b>Ask about IOMETE</b><span className="eyebrow">Answers from public sources only</span></span>
           <button aria-label="Close" onClick={() => setOpen(false)}>×</button>
         </div>
         <div className="dock-log" ref={logRef} aria-live="polite">

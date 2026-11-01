@@ -1,0 +1,58 @@
+/* Owned by the where-data-goes page. Scope new rules under .v-where-data-goes where possible. */
+.v-where-data-goes .wdg > svg { width: 100%; height: auto; display: block; overflow: visible; }
+.v-where-data-goes .wdg-tall { display: none !important; }
+@media (max-width: 959px) {
+  .v-where-data-goes .wdg-wide { display: none !important; }
+  .v-where-data-goes .wdg-tall { display: block !important; max-width: 420px; margin: 0 auto; }
+}
+.v-where-data-goes .wdg-hint { margin-top: 18px; font-size: .95rem; color: var(--ink-3); }
+
+/* tappable parts */
+.v-where-data-goes .wdg-flow, .v-where-data-goes .wdg-vault { cursor: pointer; outline: none; }
+.v-where-data-goes .wdg-vault rect:first-child { transition: fill-opacity .2s, stroke-opacity .2s; }
+.v-where-data-goes .wdg-vault:hover rect:first-child,
+.v-where-data-goes .wdg-vault:focus-visible rect:first-child { fill-opacity: .12; stroke-opacity: .5; }
+.v-where-data-goes .wdg-vault:focus-visible rect:first-child { stroke: var(--lime); stroke-opacity: 1; }
+.v-where-data-goes .wdg-lane { transition: stroke-width .2s; }
+.v-where-data-goes .wdg-flow:hover .wdg-lane,
+.v-where-data-goes .wdg-flow:focus-visible .wdg-lane { stroke-width: 5; }
+.v-where-data-goes .wdg-flow text { transition: fill .2s; }
+.v-where-data-goes .wdg-flow:hover .wdg-src,
+.v-where-data-goes .wdg-flow:focus-visible .wdg-src { fill: var(--ink); text-decoration: underline; }
+.v-where-data-goes .wdg-flow:focus-visible text:first-of-type { text-decoration: underline; }
+
+/* entrance, once in view */
+.v-where-data-goes .wdg-env, .v-where-data-goes .wdg-co, .v-where-data-goes .wdg-vault,
+.v-where-data-goes .wdg-hub, .v-where-data-goes .wdg-flow { opacity: 0; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); transform-box: fill-box; }
+.v-where-data-goes .wdg-vault { transform: translateY(14px); transition-delay: var(--d, .4s); }
+.v-where-data-goes .wdg-hub { transform: scale(.7); transform-origin: center; transition-delay: .15s; }
+.v-where-data-goes .wdg-co { transition-delay: .7s; }
+.v-where-data-goes .wdg-out { transition-delay: .9s; }
+.v-where-data-goes .wdg-in { transition-delay: 1.3s; }
+.v-where-data-goes .wdg.in .wdg-env, .v-where-data-goes .wdg.in .wdg-co, .v-where-data-goes .wdg.in .wdg-vault,
+.v-where-data-goes .wdg.in .wdg-hub, .v-where-data-goes .wdg.in .wdg-flow { opacity: 1; transform: none; }
+
+.v-where-data-goes .wdg-wire { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .8s ease .3s; }
+.v-where-data-goes .wdg.in .wdg-wire { stroke-dashoffset: 0; }
+.v-where-data-goes .wdg-out .wdg-lane { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s ease 1s, stroke-width .2s; }
+.v-where-data-goes .wdg.in .wdg-out .wdg-lane { stroke-dashoffset: 0; }
+
+/* ambient motion */
+.v-where-data-goes .wdg.in .wdg-line { animation: wdg-march 1.6s linear infinite; }
+@keyframes wdg-march { to { stroke-dashoffset: -19; } }
+.v-where-data-goes .wdg-ring { transform-box: fill-box; transform-origin: center; opacity: 0; }
+.v-where-data-goes .wdg.in .wdg-ring { animation: wdg-pulse 3s ease-out 1s infinite; }
+.v-where-data-goes .wdg.in .wdg-ring2 { animation-delay: 2.5s; }
+@keyframes wdg-pulse { 0% { transform: scale(.85); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+.v-where-data-goes .wdg-gate { transform-box: fill-box; transform-origin: center; }
+.v-where-data-goes .wdg.in .wdg-gate { animation: wdg-gate 3.4s ease-in-out 1.6s infinite; }
+@keyframes wdg-gate { 0%, 70%, 100% { transform: none; } 80% { transform: scale(1.18); } }
+.v-where-data-goes .wdg-particles { opacity: 0; transition: opacity .5s ease 1.8s; }
+.v-where-data-goes .wdg.in .wdg-particles { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v-where-data-goes .wdg * { animation: none !important; transition: none !important; }
+  .v-where-data-goes .wdg-env, .v-where-data-goes .wdg-co, .v-where-data-goes .wdg-vault,
+  .v-where-data-goes .wdg-hub, .v-where-data-goes .wdg-flow { opacity: 1; transform: none; }
+  .v-where-data-goes .wdg-wire, .v-where-data-goes .wdg-out .wdg-lane { stroke-dashoffset: 0; }
+}

@@ -1,15 +1,16 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { PERSONAS } from "@/content/personas";
 import { INTENTS, intentBySlug, intentFor, sectionsFor, type Intent } from "@/content/intents";
-import { CHECKED_AT, FACTS } from "@/lib/facts";
+import { TEASERS } from "@/content/teasers";
+import { CHECKED_AT, FACTS, factById } from "@/lib/facts";
 import type { Answer } from "@/lib/types";
-import { BeatBar, CAPTIONS, HeroDiagram, useBeats } from "./Hero";
+import Landing from "./Landing";
+import { Icon } from "./QuestionIcon";
 import { VISUALS, Dot } from "./Visuals";
-import { Statements } from "./Statements";
-import { AnswerBlock, BotDock, ask, type Turn } from "./Bot";
-
-const counts = FACTS.reduce((a, f) => ((a[f.state] = (a[f.state] || 0) + 1), a), {} as Record<string, number>);
+import { EvidenceBar, Statements } from "./Statements";
+import { BotDock, ask, type Turn } from "./Bot";
 
 function readIntent(): Intent | null {
   const params = new URLSearchParams(window.location.search);
@@ -20,14 +21,6 @@ function readIntent(): Intent | null {
   return null;
 }
 
-const ICONS: Record<string, React.ReactNode> = {
-  "where-data-goes": <><rect x="4" y="8" width="20" height="16" rx="3" /><path d="M14 2v12m-4-4 4 4 4-4" /></>,
-  "security-review": <><path d="M14 3 5 7v6c0 6 4 10 9 12 5-2 9-6 9-12V7z" /><path d="m10 14 3 3 5-6" /></>,
-  "what-it-costs": <><circle cx="14" cy="14" r="10" /><path d="M17.5 10.5c-.7-1-2-1.5-3.5-1.5-2 0-3.5 1-3.5 2.5 0 3.5 7 2 7 5 0 1.5-1.5 2.5-3.5 2.5-1.6 0-3-.6-3.7-1.7M14 7v2m0 10v2" /></>,
-  "why-not-saas": <><rect x="2" y="9" width="10" height="10" rx="2" /><rect x="16" y="9" width="10" height="10" rx="2" /><path d="M12 14h4" /></>,
-  "what-gets-installed": <><path d="m14 3 10 5.5v11L14 25 4 19.5v-11z" /><path d="M4 8.5 14 14l10-5.5M14 14v11" /></>,
-  "how-hard-to-run": <><circle cx="14" cy="14" r="4" /><path d="M14 2v4m0 16v4M2 14h4m16 0h4M5.5 5.5l2.8 2.8m11.4 11.4 2.8 2.8M5.5 22.5l2.8-2.8m11.4-11.4 2.8-2.8" /></>,
-};
 /** The question a buyer usually has next, so every page hands off to one obvious step. */
 const NEXT_Q: Record<string, string> = {
   "where-data-goes": "security-review",
@@ -38,8 +31,72 @@ const NEXT_Q: Record<string, string> = {
   "how-hard-to-run": "what-gets-installed",
 };
 
-function Icon({ slug }: { slug: string }) {
-  return <svg className="qicon" width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICONS[slug]}</svg>;
+/** Which questions this visitor has opened, for this browser tab only. */
+const SEEN_KEY = "iomete.seen";
+function loadSeen(): string[] {
+  try { const v = JSON.parse(sessionStorage.getItem(SEEN_KEY) || "[]"); return Array.isArray(v) ? v.filter((s) => intentBySlug[s]) : []; }
+  catch { return []; }
+}
+function saveSeen(s: string[]) {
+  try { sessionStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch { /* storage blocked: progress just isn't remembered */ }
+}
+
+/** Split the direct answer into a one-line hook and the rest. */
+function splitAnswer(a: string): [string, string] {
+  const m = a.match(/^(.+?[.!?])\s+(?=[A-Z$])(.*)$/s);
+  return m ? [m[1], m[2]] : [a, ""];
+}
+
+/** Swap page content inside a View Transition when the browser has one, so pages crossfade instead of flashing. */
+type VT = { skipTransition: () => void; finished: Promise<void> };
+let activeVT: VT | null = null;
+function transition(update: () => void) {
+  const d = document as Document & { startViewTransition?: (cb: () => void) => VT };
+  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (!d.startViewTransition || reduce) { update(); return; }
+  const vt = d.startViewTransition(() => flushSync(update));
+  activeVT = vt;
+  vt.finished.catch(() => {}).finally(() => { if (activeVT === vt) activeVT = null; });
+}
+/** While pages crossfade the browser routes clicks to <html>; end the fade and hand the click to what is underneath. */
+function useClickThroughTransitions() {
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!activeVT || e.target !== document.documentElement) return;
+      activeVT.skipTransition();
+      activeVT = null;
+      const { clientX: x, clientY: y } = e;
+      requestAnimationFrame(() => {
+        const el = document.elementFromPoint(x, y);
+        if (el && el !== document.documentElement) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y }));
+      });
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+}
+
+function Progress({ current, seen, go }: { current: string; seen: string[]; go: (i: Intent) => void }) {
+  const idx = INTENTS.findIndex((i) => i.slug === current);
+  return (
+    <nav className="qrail" aria-label="The six questions">
+      <span className="qrail-count">Question {idx + 1} of {INTENTS.length}</span>
+      <ol>
+        {INTENTS.map((i) => {
+          const here = i.slug === current;
+          const was = seen.includes(i.slug);
+          return (
+            <li key={i.slug} className={here ? "here" : was ? "seen" : ""}>
+              <button onClick={() => go(i)} aria-current={here ? "page" : undefined}
+                aria-label={`${i.question}${here ? " (this page)" : was ? " (seen)" : ""}`} title={i.question} disabled={here}>
+                <Icon slug={i.slug} />
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
 }
 
 export default function Experience({ initial }: { initial: string | null }) {
@@ -49,16 +106,23 @@ export default function Experience({ initial }: { initial: string | null }) {
   const [dockOpen, setDockOpen] = useState(false);
   const [highlight, setHighlight] = useState<string | undefined>();
   const [pending, setPending] = useState<{ atom?: string; fact?: string } | null>(null);
-  const [landingQ, setLandingQ] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const beats = useBeats();
-  const { beat } = beats;
+  const [seen, setSeen] = useState<string[]>([]);
+  useClickThroughTransitions();
 
   useEffect(() => {
-    const onPop = () => setIntent(readIntent());
+    const onPop = () => transition(() => { setIntent(readIntent()); window.scrollTo(0, 0); });
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
+
+  // remember every question opened in this tab
+  useEffect(() => {
+    const s = loadSeen();
+    const next = intent && !s.includes(intent.slug) ? [...s, intent.slug] : s;
+    if (next !== s) saveSeen(next);
+    setSeen(next);
+  }, [intent]);
 
   const hlTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const intentRef = useRef(intent);
@@ -66,8 +130,15 @@ export default function Experience({ initial }: { initial: string | null }) {
   const go = useCallback((next: Intent | null, target?: { atom?: string; fact?: string }) => {
     if (intentRef.current?.slug !== next?.slug) {
       window.history.pushState({}, "", next ? `/?v=${next.slug}` : "/");
-      // a new page starts folded, unless we are about to point at one of its statements
-      setDetailsOpen(!!target?.fact);
+      transition(() => {
+        // a new page starts folded, unless we are about to point at one of its statements
+        setDetailsOpen(!!target?.fact);
+        setIntent(next);
+        // a new page starts at its top; a pointed-at statement scrolls below
+        if (!target?.fact && !target?.atom) window.scrollTo(0, 0);
+        else setPending(target);
+      });
+      return;
     }
     setIntent(next);
     setPending(target ?? {});
@@ -120,9 +191,10 @@ export default function Experience({ initial }: { initial: string | null }) {
 
   const sections = intent ? sectionsFor(intent) : [];
   const next = intent ? PERSONAS[intent.persona].next.filter((n) => !n.href.includes(`v=${intent.slug}`) || n.href.startsWith("/brief")) : [];
+  const seenCount = seen.length;
 
   return (
-    <div>
+    <div className={`app${dockOpen ? " dock-open" : ""}`}>
       <header className="topbar">
         <div className="wrap topbar-inner">
           <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); go(null); }}>
@@ -130,90 +202,117 @@ export default function Experience({ initial }: { initial: string | null }) {
             <b>IOMETE</b><span>in plain words</span>
           </a>
           <nav className="topnav">
-            {intent && <button className="link" onClick={() => go(null)}>All questions</button>}
-            <button className="btn btn-lime btn-sm" onClick={() => setDockOpen(true)}>Ask a question</button>
+            {intent && (
+              <button className="topnav-all" onClick={() => go(null)}>
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><g fill="currentColor"><rect x="0" y="0" width="6" height="6" rx="1.5" /><rect x="8" y="0" width="6" height="6" rx="1.5" /><rect x="0" y="8" width="6" height="6" rx="1.5" /><rect x="8" y="8" width="6" height="6" rx="1.5" /></g></svg>
+                <span>All questions</span>{seenCount > 0 && <small>{seenCount}/{INTENTS.length}</small>}
+              </button>
+            )}
+            <button className="btn btn-lime btn-sm" onClick={() => setDockOpen(true)} aria-expanded={dockOpen}>Ask a question</button>
           </nav>
         </div>
       </header>
 
       {!intent ? (
-        <main className="landing">
-          <div className="wrap">
-            <div className="landing-grid">
-              <div className="landing-copy">
-                <h1>Your data.<br />Your servers.<br />Your rules.</h1>
-                <div className="caption-stack" aria-live="polite">
-                  {CAPTIONS.map((c, i) => <p key={i} className={beat === i ? "on" : ""}>{c}</p>)}
-                </div>
-                <BeatBar labels={["What it is", "Where it runs", "Why it matters"]} {...beats} />
-              </div>
-              <HeroDiagram beat={beat} />
-            </div>
-
-            <section className="questions" aria-labelledby="q-head">
-              <h2 id="q-head" className="sr-only">What do you want to know first?</h2>
-              <ul>
-                {INTENTS.map((it, i) => (
-                  <li key={it.slug} style={{ animationDelay: `${0.06 * i}s` }}>
-                    <button onClick={() => go(it)}>
-                      <Icon slug={it.slug} />
-                      <span>{it.question}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <form className="askbar" onSubmit={(e) => { e.preventDefault(); if (landingQ.trim()) { onAsk(landingQ.trim()); setLandingQ(""); } }}>
-                <label htmlFor="landing-q" className="sr-only">Ask in your own words</label>
-                <input id="landing-q" value={landingQ} onChange={(e) => setLandingQ(e.target.value)}
-                  placeholder="Or ask in your own words, or tell us about your role" autoComplete="off" />
-                <button className="btn btn-lime" disabled={busy}>Ask</button>
-              </form>
-              {turns.length > 0 && turns[turns.length - 1].a && (
-                <div className="landing-answer"><AnswerBlock a={turns[turns.length - 1].a!} onShow={show} /></div>
-              )}
-            </section>
-          </div>
-        </main>
+        <Landing go={go} onAsk={onAsk} busy={busy} last={turns[turns.length - 1]?.a} onShow={show} />
       ) : (
-        <main className="answer">
+        <main className={`answer v-${intent.slug}`} key={intent.slug}>
           <div className="wrap">
-            <h1>{intent.question}</h1>
-            <p className="q-answer">{intent.answer}</p>
+            {(() => {
+              const [hook, rest] = splitAnswer(intent.answer);
+              return (
+                <div className="a-head">
+                  <Progress current={intent.slug} seen={seen} go={go} />
+                  <h1>{intent.question}</h1>
+                  <p className="q-answer"><span className="hook">{hook}</span>{rest && <span className="rest"> {rest}</span>}</p>
+                </div>
+              );
+            })()}
             {(() => { const V = VISUALS[intent.slug]; return <V onPick={pick} />; })()}
-            <p className="legend"><Dot state="documented" /> documented <Dot state="claimed" /> IOMETE claims <Dot state="unknown" /> not public. Tap anything to see its source.</p>
             <Statements atoms={sections} open={detailsOpen} setOpen={setDetailsOpen} highlight={highlight} />
             {(() => {
               const nx = intentBySlug[NEXT_Q[intent.slug]];
+              const t = TEASERS[nx.slug];
+              const tf = t && factById[t.fact];
+              const others = INTENTS.filter((i) => i.slug !== intent.slug && i.slug !== nx.slug);
+              const left = INTENTS.filter((i) => !seen.includes(i.slug)).length;
               return (
                 <nav className="nextup" aria-label="Where to go next">
-                  <p className="nextup-hook">Usually asked next</p>
-                  <button className="nextup-main" onClick={() => go(nx)}><Icon slug={nx.slug} /><span>{nx.question}</span><span aria-hidden="true" className="arrow">→</span></button>
+                  <div className="nextup-head">
+                    <p className="nextup-hook">Usually asked next</p>
+                    <p className="nextup-progress" aria-live="polite">
+                      {left === 0 ? "You have seen all six questions." : `${INTENTS.length - left} of ${INTENTS.length} seen`}
+                      <span className="pbar" aria-hidden="true">{INTENTS.map((i) => <i key={i.slug} className={seen.includes(i.slug) ? "on" : ""} />)}</span>
+                    </p>
+                  </div>
+                  <button className="nextup-main" onClick={() => go(nx)}>
+                    <span className="nm-icon"><Icon slug={nx.slug} /></span>
+                    {t && <span className="nm-big">{t.big}</span>}
+                    <span className="nm-q">{nx.question}</span>
+                    {t && <span className="nm-line">{tf && <Dot state={tf.state} />}{t.line}</span>}
+                    <span aria-hidden="true" className="arrow">→</span>
+                    {seen.includes(nx.slug) && <span className="nm-seen">Seen</span>}
+                  </button>
                   <div className="more">
-                    {INTENTS.filter((i) => i.slug !== intent.slug && i.slug !== nx.slug).map((i) => (
-                      <button key={i.slug} onClick={() => go(i)}><Icon slug={i.slug} /><span>{i.question}</span></button>
-                    ))}
+                    {others.map((i) => {
+                      const ti = TEASERS[i.slug];
+                      const was = seen.includes(i.slug);
+                      return (
+                        <button key={i.slug} onClick={() => go(i)} className={was ? "seen" : ""}>
+                          <span className="mo-top"><Icon slug={i.slug} />{was && <span className="mo-seen">Seen</span>}</span>
+                          {ti && <span className="mo-big">{ti.big}</span>}
+                          <span className="mo-q">{i.question}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </nav>
               );
             })()}
-            <p className="next-links">
-              {next.map((n, i) => (
-                <span key={n.label}>
-                  {i > 0 && " · "}
-                  <a href={n.href} target={n.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
-                    onClick={(e) => { if (n.href.startsWith("/?v=")) { e.preventDefault(); go(intentBySlug[n.href.slice(4)]); } }}>{n.label}</a>
-                </span>
-              ))}
-            </p>
+            {next.length > 0 && (
+              <section className="takeaway" aria-label="Take it further">
+                <p className="nextup-hook">Take it further</p>
+                <ul className="next-links">
+                  {next.map((n) => {
+                    const ext = n.href.startsWith("http");
+                    return (
+                      <li key={n.label}>
+                        <a href={n.href} target={ext ? "_blank" : undefined} rel="noreferrer"
+                          onClick={(e) => { if (n.href.startsWith("/?v=")) { e.preventDefault(); go(intentBySlug[n.href.slice(4)]); } }}>
+                          <b>{n.label}<span aria-hidden="true">{ext ? " ↗" : " →"}</span></b>
+                          {n.note && <span>{n.note}</span>}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
           </div>
         </main>
       )}
 
       <footer className="footer">
         <div className="wrap footer-grid">
-          <p>An unofficial guide built at hackCBS 9.0 for IOMETE&apos;s “Make Complex Tech Easy to Buy” track. Not affiliated with or endorsed by IOMETE.</p>
-          <p>{FACTS.length} statements, checked {CHECKED_AT}: {counts.documented} documented, {counts.claimed} IOMETE claims, {counts.unknown} not public.</p>
-          <p><a href="https://iomete.com" target="_blank" rel="noreferrer">iomete.com</a> · <a href="https://iomete.com/resources" target="_blank" rel="noreferrer">Docs</a> · <a href="https://github.com/iomete/iom-docs" target="_blank" rel="noreferrer">Docs source</a></p>
+          <div>
+            <p className="footer-brand"><svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" /></svg><b>IOMETE</b> in plain words</p>
+            <p>An unofficial guide built at hackCBS 9.0 for IOMETE&apos;s “Make Complex Tech Easy to Buy” track. Not affiliated with or endorsed by IOMETE.</p>
+          </div>
+          <div>
+            <p className="footer-h">The six questions</p>
+            <ul className="footer-qs">
+              {INTENTS.map((i) => (
+                <li key={i.slug} className={seen.includes(i.slug) ? "seen" : ""}>
+                  <a href={`/?v=${i.slug}`} onClick={(e) => { e.preventDefault(); go(i); }}>{i.question}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="footer-h">{FACTS.length} statements, checked {CHECKED_AT}</p>
+            <EvidenceBar facts={FACTS} />
+            <p className="footer-links"><a href="https://iomete.com" target="_blank" rel="noreferrer">iomete.com ↗</a><a href="https://iomete.com/resources" target="_blank" rel="noreferrer">Docs ↗</a><a href="https://github.com/iomete/iom-docs" target="_blank" rel="noreferrer">Docs source ↗</a></p>
+          </div>
         </div>
       </footer>
 

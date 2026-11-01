@@ -1,0 +1,168 @@
+/* Owned by the what-it-costs page. Everything scoped under .v-what-it-costs. */
+.v-what-it-costs {
+  --cp-bg: #2d382d; --cp-bg2: #364336; --cp-ink: #f4f6ef; --cp-ink2: rgba(244,246,239,.72); --cp-ink3: rgba(244,246,239,.5);
+  --cp-grid: rgba(244,246,239,.1); --cp-bc: #f0a35e;
+  --mono: var(--font-mono), ui-monospace, monospace;
+}
+
+/* ---------- the dark explorer panel ---------- */
+.v-what-it-costs .cost-panel {
+  background: radial-gradient(120% 80% at 100% 0%, #3a4a37 0%, var(--cp-bg) 55%); color: var(--cp-ink);
+  border-radius: 24px; padding: 32px 32px 26px; box-shadow: 0 30px 60px -30px rgba(29,33,29,.45);
+}
+.v-what-it-costs .cost-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.v-what-it-costs .cost-hero { display: grid; gap: 6px; border-radius: 12px; }
+.v-what-it-costs .cost-eyebrow, .v-what-it-costs .cost-bill-title {
+  font-family: var(--mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--cp-ink3);
+}
+.v-what-it-costs .cost-big {
+  font-family: var(--display); font-weight: 300; font-size: clamp(3.2rem, 8vw, 6rem); line-height: .95; letter-spacing: -.035em;
+  color: var(--lime); min-width: 7ch;
+}
+.v-what-it-costs .cost-why { display: inline-flex; align-items: center; gap: 8px; font-size: 1rem; color: var(--cp-ink2); min-height: 1.6em; }
+.v-what-it-costs .cost-hero:hover .cost-why { color: var(--cp-ink); }
+
+.v-what-it-costs .cost-noq {
+  display: grid; gap: 4px; padding: 14px 18px; border-radius: 16px; background: rgba(211,245,44,.08);
+  box-shadow: inset 0 0 0 1px rgba(211,245,44,.28); transition: background .2s;
+}
+.v-what-it-costs .cost-noq:hover { background: rgba(211,245,44,.15); }
+.v-what-it-costs .cost-noq-row { display: flex; align-items: baseline; gap: 10px; }
+.v-what-it-costs .cost-noq-row b { font-family: var(--display); font-weight: 300; font-size: 2rem; line-height: 1.05; color: var(--cp-ink); }
+.v-what-it-costs .cost-noq-row span { color: var(--cp-ink2); font-size: .95rem; }
+.v-what-it-costs .cost-noq-src { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: .8rem; color: var(--cp-ink3); }
+
+/* ---------- chart ---------- */
+.v-what-it-costs .cost-plot { margin-top: 26px; position: relative; }
+.v-what-it-costs .cost-chart { display: block; touch-action: pan-y; cursor: ew-resize; user-select: none; overflow: visible; }
+.v-what-it-costs .cost-chart text { font-family: var(--body); font-size: 12px; fill: var(--cp-ink2); }
+.v-what-it-costs .cc-grid line { stroke: var(--cp-grid); stroke-width: 1; }
+.v-what-it-costs .cc-grid text, .v-what-it-costs .cc-tick { fill: var(--cp-ink3); font-variant-numeric: tabular-nums; }
+.v-what-it-costs .cc-axis { fill: var(--cp-ink3); font-family: var(--mono) !important; letter-spacing: .06em; text-transform: uppercase; font-size: 11.5px !important; }
+.v-what-it-costs .cc-free { fill: rgba(211,245,44,.07); stroke: rgba(211,245,44,.25); stroke-width: 1; }
+.v-what-it-costs .cc-ann { paint-order: stroke; stroke: var(--cp-bg); stroke-width: 4px; stroke-linejoin: round; fill: var(--cp-ink) !important; font-size: 13px !important; font-weight: 500; }
+.v-what-it-costs .cc-ann-sub { fill: var(--lime) !important; font-weight: 500; }
+.v-what-it-costs .cc-line { fill: none; stroke: var(--lime); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.v-what-it-costs .cost-chart.is-seen .cc-line { stroke-dashoffset: 0; transition: stroke-dashoffset 1.4s cubic-bezier(.6,.05,.2,1); }
+.v-what-it-costs .cc-area { opacity: 0; transition: opacity .9s .6s; }
+.v-what-it-costs .cost-chart.is-seen .cc-area { opacity: 1; }
+.v-what-it-costs .cc-jump { stroke: var(--cp-ink3); stroke-width: 1; stroke-dasharray: 2 3; }
+.v-what-it-costs .cc-wedge { transition: opacity .2s; }
+.v-what-it-costs .cc-node { fill: var(--cp-bg); stroke: var(--lime); stroke-width: 2.5; }
+.v-what-it-costs .cc-hitpad { fill: transparent; }
+.v-what-it-costs .cc-bc { stroke: var(--cp-bc); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.v-what-it-costs .cc-bc-hit { stroke: transparent; stroke-width: 18; }
+.v-what-it-costs .cc-hit { cursor: pointer; outline: none; transition: opacity .2s; }
+.v-what-it-costs .cc-hit:hover .cc-ann, .v-what-it-costs .cc-hit:focus-visible .cc-ann { text-decoration: underline; }
+.v-what-it-costs .cc-hit:focus-visible .cc-free, .v-what-it-costs .cc-hit:focus-visible .cc-node { stroke: #fff; }
+.v-what-it-costs .cc-hit.is-dim, .v-what-it-costs .cc-wedge.is-dim { opacity: .3; }
+.v-what-it-costs .cc-hit.is-on .cc-free { fill: rgba(211,245,44,.16); }
+.v-what-it-costs .cc-hit.is-on .cc-bc { stroke-width: 3; }
+.v-what-it-costs .cc-hit.is-on .cc-node { r: 7; }
+.v-what-it-costs .cc-ghost line { stroke: var(--cp-ink3); stroke-width: 1; }
+.v-what-it-costs .cc-ghost circle { fill: var(--cp-ink3); }
+.v-what-it-costs .cc-ghost text { fill: var(--cp-ink2); }
+.v-what-it-costs .cc-marker line { stroke: rgba(244,246,239,.55); stroke-width: 1; }
+.v-what-it-costs .cc-dot { fill: var(--lime); stroke: var(--cp-bg); stroke-width: 3; filter: drop-shadow(0 0 10px rgba(211,245,44,.6)); }
+.v-what-it-costs .cc-bubble rect { fill: var(--cp-ink); }
+.v-what-it-costs .cc-bubble text { fill: var(--ink) !important; font-weight: 600; font-variant-numeric: tabular-nums; }
+.v-what-it-costs .cc-dot, .v-what-it-costs .cc-bubble rect, .v-what-it-costs .cc-bubble text, .v-what-it-costs .cc-marker line { transition: all .18s ease-out; }
+
+/* range input lined up under the plot */
+.v-what-it-costs .cost-range { margin-top: -6px; }
+.v-what-it-costs .cost-range input { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; cursor: ew-resize; }
+.v-what-it-costs .cost-range input::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--lime) var(--p), rgba(244,246,239,.15) var(--p)); }
+.v-what-it-costs .cost-range input::-moz-range-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--lime) var(--p), rgba(244,246,239,.15) var(--p)); }
+.v-what-it-costs .cost-range input::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--lime); border: 4px solid var(--cp-bg); box-shadow: 0 0 0 1px var(--lime); }
+.v-what-it-costs .cost-range input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--lime); border: 4px solid var(--cp-bg); box-shadow: 0 0 0 1px var(--lime); }
+.v-what-it-costs .cost-range input:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; border-radius: 8px; }
+.v-what-it-costs .cost-xlabel { display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--cp-ink3); }
+
+.v-what-it-costs .cost-live { display: none; color: var(--cp-ink2); letter-spacing: .04em; }
+.v-what-it-costs .cost-live b { color: var(--lime); font-weight: 500; }
+.v-what-it-costs .cc-mtop { fill: var(--lime) !important; font-weight: 600; font-size: 13px !important; }
+.v-what-it-costs .bill-sla .dot { transform: translateY(-1px); }
+
+/* plan chips under the chart */
+.v-what-it-costs .cost-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
+.v-what-it-costs .cost-plan { display: grid; gap: 2px; padding: 14px 16px; border-radius: 14px; background: rgba(244,246,239,.05); box-shadow: inset 0 0 0 1px rgba(244,246,239,.1); transition: background .2s, box-shadow .2s; }
+.v-what-it-costs .cost-plan:hover { background: rgba(244,246,239,.1); }
+.v-what-it-costs .cost-plan.is-active { box-shadow: inset 0 0 0 1.5px var(--lime); background: rgba(211,245,44,.08); }
+.v-what-it-costs .cost-plan-n { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--cp-ink2); }
+.v-what-it-costs .cost-plan .dot-documented { background: var(--cp-ink3); }
+.v-what-it-costs .cost-plan b { font-family: var(--display); font-weight: 300; font-size: 1.7rem; line-height: 1.15; color: var(--cp-ink); }
+.v-what-it-costs .cost-plan small { font-size: .85rem; color: var(--cp-ink3); }
+
+/* dots on the dark panel need a light ring to stay visible */
+.v-what-it-costs .cost-panel .dot-documented { background: #9fc29f; }
+
+/* ---------- the honest bill ---------- */
+.v-what-it-costs .cost-bill { margin-top: 36px; }
+.v-what-it-costs .cost-bill-title { color: var(--ink-3); }
+.v-what-it-costs .cost-bill-row { display: flex; align-items: stretch; gap: 10px; margin-top: 12px; }
+.v-what-it-costs .bill { display: grid; align-content: start; gap: 6px; padding: 18px 20px; border-radius: 16px; min-width: 0; transition: background .2s, flex-grow .5s ease; }
+.v-what-it-costs .bill-known { flex: calc(1 + var(--s) * 1.4) 1 0; background: var(--lime); }
+.v-what-it-costs .bill-known b { font-family: var(--display); font-weight: 300; font-size: 2.2rem; line-height: 1; letter-spacing: -.02em; }
+.v-what-it-costs .bill-tag { display: inline-flex; align-items: center; gap: 8px; font-size: .92rem; font-weight: 500; }
+.v-what-it-costs .bill small { font-size: .85rem; color: var(--ink-2); line-height: 1.35; }
+.v-what-it-costs .bill-fog { flex: 1 1 0; background: var(--soft); }
+.v-what-it-costs .bill-fog:hover { background: var(--green-soft); }
+.v-what-it-costs .bill-unknown { background: #fbf1ee; }
+.v-what-it-costs .bill-unknown:hover { background: #f7e2dc; }
+.v-what-it-costs .bill-fogbar { display: block; height: 2.2rem; border-radius: 8px; overflow: hidden; position: relative;
+  background: repeating-linear-gradient(135deg, rgba(45,56,45,.22) 0 2px, transparent 2px 8px);
+  -webkit-mask-image: linear-gradient(90deg, #000 20%, transparent 100%); mask-image: linear-gradient(90deg, #000 20%, transparent 100%); }
+.v-what-it-costs .bill-unknown .bill-fogbar { background: repeating-linear-gradient(135deg, rgba(196,71,47,.35) 0 2px, transparent 2px 8px); }
+.v-what-it-costs .bill-fogbar i { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent); transform: translateX(-100%); animation: cost-shimmer 3.2s ease-in-out infinite; }
+@keyframes cost-shimmer { 60%, 100% { transform: translateX(100%); } }
+.v-what-it-costs .bill-plus { align-self: center; font-family: var(--display); font-weight: 300; font-size: 1.8rem; color: var(--ink-3); }
+.v-what-it-costs .bill-sla { display: inline-flex; align-items: baseline; gap: 8px; margin-top: 12px; font-size: .9rem; color: var(--ink-2); }
+.v-what-it-costs .bill-sla:hover { color: var(--ink); text-decoration: underline; }
+.v-what-it-costs .bill-sla em { font-style: normal; font-weight: 600; color: var(--ink); }
+
+/* ---------- next hooks ---------- */
+.v-what-it-costs .cost-more { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; margin-top: 28px; }
+.v-what-it-costs .cost-card { display: grid; align-content: start; gap: 16px; padding: 20px; border-radius: 16px; }
+.v-what-it-costs .cost-card-h { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
+.v-what-it-costs .cost-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+.v-what-it-costs .cost-steps li { position: relative; padding-top: 20px; font-size: .88rem; line-height: 1.3; color: var(--ink-3); }
+.v-what-it-costs .cost-steps li::before { content: ""; position: absolute; top: 3px; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); }
+.v-what-it-costs .cost-steps li::after { content: ""; position: absolute; top: 7.5px; left: 14px; right: 4px; height: 1px; background: var(--rule); }
+.v-what-it-costs .cost-steps li.now { color: var(--ink); font-weight: 500; }
+.v-what-it-costs .cost-steps li.now::before { background: var(--lime); box-shadow: 0 0 0 2px var(--green); }
+.v-what-it-costs .cost-steps li.now::after { display: none; }
+.v-what-it-costs .cost-claims { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 10px 22px; }
+.v-what-it-costs .cost-claims span { display: grid; align-content: start; }
+.v-what-it-costs .cost-claims b { font-family: var(--display); font-weight: 300; font-size: 1.7rem; line-height: 1.1; }
+.v-what-it-costs .cost-claims small { font-size: .8rem; color: var(--ink-3); }
+.v-what-it-costs .cost-claims .odd b { color: var(--claimed); }
+.v-what-it-costs .cost-claims .odd small { max-width: 12ch; }
+.v-what-it-costs .cost-tiles { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 760px) {
+  .v-what-it-costs .cost-panel { padding: 22px 14px 18px; border-radius: 20px; }
+  .v-what-it-costs .cost-drag { display: none; }
+  .v-what-it-costs .cost-live { display: inline; }
+  .v-what-it-costs .cost-head { flex-direction: column; align-items: stretch; gap: 16px; }
+  .v-what-it-costs .cost-noq { grid-template-columns: auto auto 1fr; align-items: baseline; gap: 4px 16px; padding: 12px 14px; }
+  .v-what-it-costs .cost-noq-row b { font-size: 1.5rem; }
+  .v-what-it-costs .cost-noq { grid-template-columns: auto auto; justify-content: start; gap: 2px 22px; }
+  .v-what-it-costs .cost-noq-src { margin: 2px 0 0; grid-column: 1 / -1; }
+  .v-what-it-costs .cost-why { font-size: .92rem; }
+  .v-what-it-costs .cost-plans { grid-template-columns: 1fr; gap: 8px; }
+  .v-what-it-costs .cost-plan { grid-template-columns: 1fr auto; align-items: baseline; padding: 12px 14px; }
+  .v-what-it-costs .cost-plan b { grid-row: 1; grid-column: 2; font-size: 1.35rem; }
+  .v-what-it-costs .cost-plan small { grid-column: 1 / -1; }
+  .v-what-it-costs .cost-bill-row { flex-direction: column; gap: 6px; }
+  .v-what-it-costs .bill-plus { align-self: flex-start; padding-left: 20px; font-size: 1.4rem; line-height: 1; }
+  .v-what-it-costs .bill-fogbar { height: 1.4rem; }
+  .v-what-it-costs .cost-more { grid-template-columns: 1fr; }
+  .v-what-it-costs .cost-claims { grid-template-columns: repeat(2, auto); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-what-it-costs .cc-line { stroke-dashoffset: 0; }
+  .v-what-it-costs .cost-chart *, .v-what-it-costs .bill { transition: none !important; }
+  .v-what-it-costs .bill-fogbar i { animation: none; display: none; }
+}

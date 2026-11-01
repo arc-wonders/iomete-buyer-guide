@@ -68,10 +68,14 @@ try {
   check("Cost question opens the cost page with the Enterprise price highlighted and visible", ent.hl && ent.top >= 60, JSON.stringify(ent));
   await shot(page, "3-cost");
 
-  // 5. Calculator applies the documented minimum
-  await page.$eval("#vcpu", (el) => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, "100"); el.dispatchEvent(new Event("input", { bubbles: true })); });
-  const price = await page.$eval("output[for=vcpu]", (e) => e.textContent);
-  check("Calculator applies the $100,000 minimum at 100 vCPUs", price === "$100,000", price);
+  // 5. Calculator: Free plan up to 100 vCPUs, then the documented $100,000 Enterprise minimum
+  const priceAt = async (n) => {
+    await page.$eval("#vcpu", (el, v) => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, v); el.dispatchEvent(new Event("input", { bubbles: true })); }, String(n));
+    await new Promise((r) => setTimeout(r, 300));
+    return page.$eval("output[for=vcpu]", (e) => e.textContent);
+  };
+  const atFree = await priceAt(100), atMin = await priceAt(150);
+  check("Calculator: $0 on the Free plan at 100 vCPUs, $100,000 minimum at 150", atFree === "$0" && atMin === "$100,000", `${atFree} / ${atMin}`);
 
   // 6. Self-description routes silently: the reply does not echo a role back
   await page.goto(BASE, { waitUntil: "networkidle0" });

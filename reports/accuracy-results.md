@@ -1,6 +1,6 @@
 # Accuracy results
 
-Run 2026-11-01 05:34 UTC against http://localhost:3107. Engine: **retrieval**. Corpus: 392 pages, 4717 chunks, fetched 2026-10-31.
+Run 2026-11-01 06:06 UTC against http://localhost:3400. Engine: **retrieval**. Corpus: 392 pages, 4717 chunks, fetched 2026-10-31.
 
 | Measure | Result |
 |---|---|
