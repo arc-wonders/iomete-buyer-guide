@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IOMETE persona site plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* IOMETE's own tokens, recovered from iomete.com's stylesheet: lime on racing green, stone paper. Layout: single column plan, 68ch measure, wide tables scroll. */
+  --paper:#fcfcf8; --ink:#202020; --ink-2:#626261; --rule:#d0d0cd; --card:#ffffff;
+  --racing:#2d382d; --racing-ink:#e8f7e8; --lime:#d3f52c; --lime-ink:#53591e; --stone:#f2eeeb;
+  --doc:#617a61; --claim:#e39740; --unknown:#cf543c;
+  --display:"Archivo","Palatino Linotype",serif; --body:"Inter",system-ui,sans-serif; --mono:"DM Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#1b201b; --ink:#f0f0ea; --ink-2:#a0b8a0; --rule:#3a463a; --card:#242b24;
+  --racing:#2d382d; --racing-ink:#e8f7e8; --stone:#2a302a; --lime-ink:#e8fa82; }}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#1b201b; --ink:#f0f0ea; --ink-2:#a0b8a0; --rule:#3a463a; --card:#242b24;
+  --racing:#2d382d; --racing-ink:#e8f7e8; --stone:#2a302a; --lime-ink:#e8fa82; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:76rem;margin:0 auto;padding:40px 20px 80px}
+header.top{background:var(--racing);color:var(--racing-ink);padding:48px 20px 40px}
+header.top .wrap{padding:0}
+.eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;font-size:.8rem;color:var(--lime)}
+h1,h2,h3{font-family:var(--display);font-weight:300;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,4vw,3rem);line-height:1.1;margin-top:10px;max-width:24ch}
+header p.lead{max-width:62ch;font-size:1.1rem;color:#c9d9c9;margin:18px 0 0}
+.meta{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:22px;font-family:var(--mono);font-size:.8rem;color:#a0b8a0}
+section{margin-top:56px}
+section>.eyebrow{color:var(--lime-ink)}
+h2{font-size:1.9rem;margin-top:6px}
+h3{font-size:1.3rem;margin-top:28px;font-weight:400}
+p,li{max-width:68ch}
+p{margin:14px 0}
+ul,ol{padding-left:22px}
+li{margin:6px 0}
+a{color:inherit;text-decoration-color:var(--lime-ink)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:20px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:18px 20px}
+.card h3{margin-top:0;font-size:1.15rem}
+.card .eyebrow{color:var(--ink-2)}
+.card p,.card li{max-width:none}
+.tablewrap{overflow-x:auto;margin-top:18px;border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.92rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left}
+th{font-family:var(--mono);font-weight:500;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2);background:var(--stone)}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.pill{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:2px 8px;border-radius:999px;border:1px solid var(--rule);white-space:nowrap}
+.keep{background:#e8f7e8;color:#2d382d;border-color:#a0b8a0}
+.reframe{background:#dce9fa;color:#373a63;border-color:#96a7eb}
+.fix{background:#fceccc;color:#6b3b1b;border-color:#eba54b}
+.drop{background:#fae1dc;color:#752414;border-color:#f5beb3}
+.state{font-family:var(--mono);font-size:.75rem;padding:2px 8px;border-radius:3px;color:#fff}
+.s-doc{background:var(--doc)} .s-claim{background:var(--claim)} .s-unk{background:var(--unknown)}
+.story{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:20px}
+.beat{background:var(--stone);border-radius:6px;padding:16px}
+.beat svg{width:100%;height:auto;display:block;border-radius:4px}
+.beat .eyebrow{color:var(--ink-2);margin-top:12px}
+.beat p{margin:6px 0 0;font-size:.95rem}
+.note{border-left:3px solid var(--lime);background:var(--stone);padding:14px 18px;border-radius:0 6px 6px 0;margin-top:20px}
+.note p{margin:6px 0}
+.doors{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:20px}
+.door{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:20px}
+.door .who{font-family:var(--display);font-size:1.6rem;font-weight:300}
+.door .line{color:var(--ink-2);margin:2px 0 14px;font-size:.95rem}
+.door ol{padding-left:20px;margin:0}
+.door li{font-size:.93rem}
+.phase{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:20px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.95rem;margin-top:14px}
+.kv dt{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2);padding-top:3px}
+.kv dd{margin:0}
+code{font-family:var(--mono);font-size:.88em;background:var(--stone);padding:1px 5px;border-radius:3px}
+footer{margin-top:72px;padding-top:20px;border-top:1px solid var(--rule);font-size:.85rem;color:var(--ink-2)}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Plan · hackCBS 9.0 · IOMETE track “Make Complex Tech Easy to Buy”</div>
+    <h1>IOMETE, explained for you</h1>
+    <p class="lead">Reuse the components iomete.com already has, keep its visual language, and route them by who is looking. One animated picture explains “sovereign lakehouse” in under 15 seconds. Three doors (FDE, CRO, CEO) or one sentence to a bot then re-order the same atoms for that person, with every number carrying a source and a state.</p>
+    <div class="meta">
+      <span>Status: planning, 1 Nov 2026</span>
+      <span>Judging: Round 1 12:00 · Pitch 16:00–17:00</span>
+      <span>Inputs: 7 research notes + 524-line site inventory</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section id="idea">
+  <div class="eyebrow">01 · The idea</div>
+  <h2>Same atoms, three readers, one truth table</h2>
+  <p>iomete.com has one headline for twelve product pages and no idea who is reading. Our version keeps IOMETE's lime-on-green, Archivo headings and isometric diagrams, but every component is re-captioned and re-weighted per persona. The bot does not write essays. It answers in two sentences and <em>moves the page</em> to the component that proves it.</p>
+  <p>Every fact rendered on the page carries one of three states, and the bot shares the same store:</p>
+  <div class="grid">
+    <div class="card"><span class="state s-doc">documented</span><p>Backed by a docs, legal or pricing URL. Example: Enterprise is $500 per vCPU per year with a $100,000 minimum.</p></div>
+    <div class="card"><span class="state s-claim">claimed</span><p>IOMETE marketing, quoted with attribution. Example: “Save 2–5x over SaaS/cloud” on the homepage, “30–60%” in the FAQ.</p></div>
+    <div class="card"><span class="state s-unk">unknown</span><p>Not in any public source. We say so and route to the Vanta trust center or a contact. Example: SOC 2 Type II, breach-notification window, SBOM.</p></div>
+  </div>
+  <div class="note">
+    <p><strong>Persona assumption to confirm.</strong> FDE is read as the engineer who would install and run it. CRO is read as <strong>Chief Risk Officer</strong>, who signs off on a data platform at the banks and insurers IOMETE sells to. If Chief Revenue Officer was meant, the door's content changes but the build does not. Personas live in one JSON file.</p>
+  </div>
+</section>
+
+<section id="landing">
+  <div class="eyebrow">02 · The 15-second landing</div>
+  <h2>One screen, three beats, no scroll</h2>
+  <p>The visual is the lime hexagon network diagram already on IOMETE's homepage, animated. The picture never changes by persona. Only the captions do.</p>
+  <div class="story">
+    <div class="beat">
+      <svg viewBox="0 0 320 180" role="img" aria-label="IOMETE hexagon lands inside a frame labelled your infrastructure">
+        <rect width="320" height="180" fill="#2d382d"/>
+        <rect x="28" y="26" width="264" height="128" rx="6" fill="none" stroke="#a0b8a0" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="36" y="20" font-family="DM Mono, monospace" font-size="9" fill="#a0b8a0" letter-spacing="1">YOUR INFRASTRUCTURE</text>
+        <g fill="none" stroke="#d3f52c" stroke-width="1.5"><line x1="160" y1="90" x2="70" y2="60"/><line x1="160" y1="90" x2="250" y2="60"/><line x1="160" y1="90" x2="70" y2="125"/><line x1="160" y1="90" x2="250" y2="125"/></g>
+        <polygon points="160,66 182,78 182,102 160,114 138,102 138,78" fill="#d3f52c"/>
+        <g font-family="DM Mono, monospace" font-size="8" fill="#e8f7e8" text-anchor="middle">
+          <rect x="48" y="50" width="44" height="18" rx="3" fill="#415441"/><text x="70" y="62">ON-PREM</text>
+          <rect x="228" y="50" width="44" height="18" rx="3" fill="#415441"/><text x="250" y="62">AWS</text>
+          <rect x="48" y="116" width="44" height="18" rx="3" fill="#415441"/><text x="70" y="128">AZURE</text>
+          <rect x="228" y="116" width="44" height="18" rx="3" fill="#415441"/><text x="250" y="128">GCP</text>
+        </g>
+      </svg>
+      <div class="eyebrow">0–5 s</div>
+      <p>The frame draws itself. The lime IOMETE mark lands inside it. Caption: “A data lakehouse that runs inside your own infrastructure.”</p>
+    </div>
+    <div class="beat">
+      <svg viewBox="0 0 320 180" role="img" aria-label="A SaaS data line pulling data out of the frame is cut">
+        <rect width="320" height="180" fill="#2d382d"/>
+        <rect x="18" y="26" width="190" height="128" rx="6" fill="none" stroke="#a0b8a0" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="26" y="20" font-family="DM Mono, monospace" font-size="9" fill="#a0b8a0" letter-spacing="1">YOUR INFRASTRUCTURE</text>
+        <polygon points="113,66 135,78 135,102 113,114 91,102 91,78" fill="#d3f52c"/>
+        <g font-family="DM Mono, monospace" font-size="8" fill="#babab7" text-anchor="middle">
+          <rect x="236" y="56" width="66" height="22" rx="3" fill="#4c4c4c"/><text x="269" y="70">SaaS PLATFORM</text>
+          <rect x="236" y="104" width="66" height="22" rx="3" fill="#4c4c4c"/><text x="269" y="118">SaaS PLATFORM</text>
+        </g>
+        <line x1="135" y1="90" x2="236" y2="67" stroke="#babab7" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <line x1="135" y1="90" x2="236" y2="115" stroke="#babab7" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <g stroke="#ed7e68" stroke-width="2.5"><line x1="202" y1="70" x2="214" y2="86"/><line x1="214" y1="70" x2="202" y2="86"/><line x1="202" y1="96" x2="214" y2="112"/><line x1="214" y1="96" x2="202" y2="112"/></g>
+      </svg>
+      <div class="eyebrow">5–10 s</div>
+      <p>Two grey SaaS marks sit outside with dotted lines pulling data out. The lines are cut. Caption: “Your data never leaves. No vendor can see it. No bill per query.”</p>
+    </div>
+    <div class="beat">
+      <svg viewBox="0 0 320 180" role="img" aria-label="Three doors labelled FDE, CRO, CEO and a text input">
+        <rect width="320" height="180" fill="#2d382d"/>
+        <g font-family="Archivo, serif" font-weight="300" fill="#e8f7e8" text-anchor="middle">
+          <rect x="18" y="30" width="86" height="74" rx="5" fill="#344234" stroke="#d3f52c" stroke-width="1.5"/><text x="61" y="62" font-size="20">FDE</text>
+          <rect x="117" y="30" width="86" height="74" rx="5" fill="#344234" stroke="#4e664e"/><text x="160" y="62" font-size="20">CRO</text>
+          <rect x="216" y="30" width="86" height="74" rx="5" fill="#344234" stroke="#4e664e"/><text x="259" y="62" font-size="20">CEO</text>
+        </g>
+        <g font-family="DM Mono, monospace" font-size="7.5" fill="#a0b8a0" text-anchor="middle">
+          <text x="61" y="88">I'D RUN IT</text><text x="160" y="88">I'D SIGN OFF ON IT</text><text x="259" y="88">I'D PAY FOR IT</text>
+        </g>
+        <rect x="18" y="124" width="284" height="28" rx="4" fill="#fcfcf8"/>
+        <text x="30" y="142" font-family="Inter, sans-serif" font-size="9" fill="#737371">Or tell me who you are and what you're trying to do…</text>
+        <rect x="258" y="128" width="40" height="20" rx="3" fill="#d3f52c"/>
+        <text x="278" y="141" font-family="DM Mono, monospace" font-size="7.5" fill="#202020" text-anchor="middle">GO</text>
+      </svg>
+      <div class="eyebrow">10–15 s</div>
+      <p>Three doors slide up with one line each, plus a single input for the bot. Picking a door or typing a sentence both lead to the same persona page.</p>
+    </div>
+  </div>
+</section>
+
+<section id="site">
+  <div class="eyebrow">03 · Component breakdown of iomete.com</div>
+  <h2>What the current site is made of</h2>
+  <div class="grid">
+    <div class="card"><div class="eyebrow">Stack</div><p>Webflow marketing site with jQuery, Google Tag Manager, HubSpot tracking (chatbot disabled), cookie-script, Leadsy and Tempa. Docs and blog on Docusaurus at <code>/resources/</code>. University on Astro. No search, chat, calculator or video on marketing pages.</p></div>
+    <div class="card"><div class="eyebrow">Pages</div><p>44 in the sitemap. One homepage, 12 product pages on one template with the identical H1 “Un-SaaS your data.”, 4 architecture pages, deployment, pricing, free plan, FAQ with 38 questions, roadmap plus 16 items, partner, about, contact, 3 policies. <code>/customers</code>, <code>/case-studies</code>, <code>/security</code>, <code>/compare</code> and <code>/book-a-demo</code> all return 404.</p></div>
+    <div class="card"><div class="eyebrow">Design tokens</div><p>Archivo Light headings, Inter body, DM Mono uppercase eyebrows. Lime accent on dark green and near-black, off-white page, stone diagram backgrounds, secondary ramps in blue, salmon and orange. Lime buttons with dark text, 0.25rem radius. All diagram, screenshot, badge and Lottie asset URLs are catalogued in the inventory.</p></div>
+  </div>
+
+  <h3>The 30 reusable atoms and what we do with each</h3>
+  <p><span class="pill keep">Keep</span> reuse with IOMETE styling · <span class="pill reframe">Reframe</span> same component, new caption and order per persona · <span class="pill fix">Fix</span> keep but correct an accuracy problem · <span class="pill drop">Drop</span> not in v1</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>Atom (where it lives today)</th><th>Decision</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Hero: eyebrow, H1, lead, screenshot, Lottie (home)</td><td><span class="pill reframe">Reframe</span></td><td>Becomes the 15-second animation. Persona changes the captions, not the picture.</td></tr>
+      <tr><td>2</td><td>Logo marquee, 13 logos, no caption (home)</td><td><span class="pill fix">Fix</span></td><td>Add the caption the site lacks: “Logos shown on iomete.com; relationship not stated.” CEO door only. No named case study exists anywhere.</td></tr>
+      <tr><td>3</td><td>IOMETE-vs-SaaS sticky comparison cards ×5 (home)</td><td><span class="pill reframe">Reframe</span> <span class="pill fix">Fix</span></td><td>CEO sees Cost and Deployment; CRO sees Ownership and Security; FDE hides them. “Save 2–5x” rendered as a claim chip with source, never as a fact.</td></tr>
+      <tr><td>4</td><td>Lime hexagon network diagram (home)</td><td><span class="pill keep">Keep</span></td><td>Best visual on the site. Base of the hero animation.</td></tr>
+      <tr><td>5</td><td>Platform module chips ×8 (home)</td><td><span class="pill reframe">Reframe</span></td><td>FDE: all 8 with doc links. CEO: one line. CRO: Advanced Data Controls and Data Catalog only.</td></tr>
+      <tr><td>6</td><td>FDE pitch “Your team, extended” (home)</td><td><span class="pill reframe">Reframe</span></td><td>FDE door: “who runs it: you, or IOMETE's FDEs”, with the Kubernetes-skills objection stated plainly.</td></tr>
+      <tr><td>7</td><td>Sticky feature showcase, 10 screenshots (home)</td><td><span class="pill reframe">Reframe</span></td><td>FDE keeps all 10. CRO keeps Data security, Domains, Data catalog. CEO sees none.</td></tr>
+      <tr><td>8</td><td>Compliance badge trio SOC2 / HIPAA / GDPR (home)</td><td><span class="pill fix">Fix</span></td><td>Keep badges, add the missing footnote: SOC 2 Type I, Dec 2022; Type II and ISO 27001 listed as readiness work in a Sep 2026 posting; HIPAA/GDPR badges have no stated scope. Link to Vanta trust center.</td></tr>
+      <tr><td>9</td><td>Blog feature + 3 cards, hard-coded (home)</td><td><span class="pill reframe">Reframe</span></td><td>“Read next for your role”, fed from the blog cluster list.</td></tr>
+      <tr><td>10</td><td>“BOOK A DEMO” CTA band (everywhere)</td><td><span class="pill reframe">Reframe</span></td><td>FDE → Free plan + install doc. CRO → trust center + unanswered-questions list. CEO → contact form prefilled with persona.</td></tr>
+      <tr><td>11</td><td>Breadcrumb hero (all subpages)</td><td><span class="pill drop">Drop</span></td><td>Single-page app.</td></tr>
+      <tr><td>12</td><td>12-tab sticky strip “Data Platfrom” (sic)</td><td><span class="pill drop">Drop</span></td><td>Replaced by the persona rail. Typo noted for IOMETE.</td></tr>
+      <tr><td>13</td><td>Deployment quartet: on-prem, public, private, hybrid</td><td><span class="pill reframe">Reframe</span> <span class="pill fix">Fix</span></td><td>FDE first screen. Add distro marks (EKS, AKS, GKE, OpenShift, Tanzu, Nutanix NKP) the page lacks. “Air-gapped” gets state <em>claimed</em>: no offline install procedure is published.</td></tr>
+      <tr><td>14</td><td>Kubernetes feature lists (deployment)</td><td><span class="pill keep">Keep</span></td><td>FDE only.</td></tr>
+      <tr><td>15</td><td>Control-plane / data-plane diagram (data-mesh page)</td><td><span class="pill keep">Keep</span> <span class="pill fix">Fix</span></td><td>Only labelled diagram. Caption from v4.0.0 release notes (30 Sep 2026). Flag that the Multi-Cluster doc page still says “no unified control plane”.</td></tr>
+      <tr><td>16</td><td>Isometric hexagon illustrations (every subpage)</td><td><span class="pill keep">Keep</span></td><td>Texture only. No information content, no accuracy risk.</td></tr>
+      <tr><td>17</td><td>Three-card grid (product pages)</td><td><span class="pill reframe">Reframe</span></td><td>Generic container filled per persona from the facts store.</td></tr>
+      <tr><td>18</td><td>Two-group bullet pairs (product pages)</td><td><span class="pill reframe">Reframe</span></td><td>FDE only, doc link per bullet.</td></tr>
+      <tr><td>19</td><td>Numbered 1-2-3 list (free plan, partner)</td><td><span class="pill keep">Keep</span></td><td>FDE: form → email → Helm.</td></tr>
+      <tr><td>20</td><td>Stat strip “87%”, “$12.9M”, “100x” (AI, open-source pages)</td><td><span class="pill drop">Drop</span></td><td>Unsourced numbers fail the accuracy criterion.</td></tr>
+      <tr><td>21</td><td>Pricing plan cards ×3</td><td><span class="pill keep">Keep</span> <span class="pill fix">Fix</span></td><td>CEO door. Footnotes made visible: $100K = 200 vCPU minimum; $250K Business Critical; infrastructure separate; support tier prices unpublished → unknown.</td></tr>
+      <tr><td>22</td><td>Support tiers Silver / Gold / Platinum</td><td><span class="pill reframe">Reframe</span></td><td>Collapsed to SLA response times. Note Gold Sev-1 changed from 30 min to 1 h in 2026.</td></tr>
+      <tr><td>23</td><td>Webflow inquiry form, 9 fields</td><td><span class="pill fix">Fix</span></td><td>One form, persona and intent prefilled. Country dropdown currently contains placeholder options “First choice, Second choice”.</td></tr>
+      <tr><td>24</td><td>Partner logo rows</td><td><span class="pill drop">Drop</span></td><td>Reseller marks unidentifiable, no alt text.</td></tr>
+      <tr><td>25</td><td>Roadmap rows with status</td><td><span class="pill reframe">Reframe</span></td><td>FDE “shipped vs roadmap” strip. Data lineage is Backlog here, contradicting homepage wording.</td></tr>
+      <tr><td>26</td><td>FAQ, 38 Q&amp;As</td><td><span class="pill reframe">Reframe</span></td><td>Not a wall. Chunked into the bot corpus; the bot answers by surfacing the relevant atom.</td></tr>
+      <tr><td>27</td><td>Policy pages ×3</td><td><span class="pill reframe">Reframe</span></td><td>CRO quotes licence §4.2 (telemetry permitted) and §10.4 (support access only when a SOW authorises).</td></tr>
+      <tr><td>28</td><td>University modules ×3, 9 videos</td><td><span class="pill keep">Keep</span></td><td>FDE “learn it” strip.</td></tr>
+      <tr><td>29</td><td>Founders photo, careers/investors (about)</td><td><span class="pill reframe">Reframe</span></td><td>CEO “who you are buying from”: YC W22, founders, 11–50 people, Gartner 2025 Market Guide inclusion (overview, not ranking). Funding “under $3M disclosed, sources conflict”.</td></tr>
+      <tr><td>30</td><td>Nav mega-menu + 5-column footer</td><td><span class="pill reframe">Reframe</span></td><td>Nav becomes persona rail + bot. Footer keeps IOMETE links.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">
+    <p><strong>Defects in the current site worth naming in the pitch.</strong> Typos (“Data Goverance”, “Data Platfrom”, “Beaver”), a duplicate RBAC bullet, dead pager links, hard-coded 2025 copyright, Webflow placeholder options in the Country dropdown, structured data claiming a 5/5 rating from 2 invisible reviews, and a <code>docs.iomete.com</code> domain still indexed by search engines but no longer resolving. Small, but exactly the friction the track is about.</p>
+  </div>
+</section>
+
+<section id="doors">
+  <div class="eyebrow">04 · The three doors</div>
+  <h2>Same skeleton, different atoms</h2>
+  <p>Each door is: concept strip → three proof blocks → one honest “what we could not confirm” block → one next step.</p>
+  <div class="doors">
+    <div class="door">
+      <div class="eyebrow">Door 1</div>
+      <div class="who">FDE</div>
+      <div class="line">The engineer who would install and run it</div>
+      <ol>
+        <li>Deployment quartet with real distro marks; air-gapped marked <em>claimed</em>.</li>
+        <li>Control-plane / data-plane diagram with version chips: v4.0.1, Spark 3.5.7, Iceberg 1.9.0, first Spark 4.1.3 image Oct 2026.</li>
+        <li>Module chips → 10-screenshot showcase → integrations row (dbt-iomete, Airflow, Power BI, Tableau, Superset, JDBC/ODBC, Spark Connect, MCP server beta).</li>
+        <li>“Not yet”: no CLI, Terraform Azure-only, lineage on backlog, table maintenance beta, no Kubernetes version matrix.</li>
+        <li>Next: Free plan (100 vCPU, manually reviewed), install doc, University videos.</li>
+      </ol>
+    </div>
+    <div class="door">
+      <div class="eyebrow">Door 2</div>
+      <div class="who">CRO</div>
+      <div class="line">Chief Risk Officer who has to sign off on it</div>
+      <ol>
+        <li>Trust-perimeter diagram: “IOMETE does not host your data; it runs in your Kubernetes and your object store”, sourced to deployment docs and licence.</li>
+        <li>Controls grid: SAML/OIDC/SCIM/LDAP, 7 masking types, row filters, tag policies with approval workflow, audit tables, NetworkPolicies, Vault secrets.</li>
+        <li>Regulation strip (DORA, GDPR Art. 32, CLOUD Act) linking IOMETE's posts, labelled as IOMETE's interpretation.</li>
+        <li>Badges with footnote, plus licence clauses on telemetry and support access.</li>
+        <li>“Questions you will still have to ask”: breach-notification window, pen test, SBOM, image signing, audit retention, DPA. All <em>unknown</em>, linked to the trust center.</li>
+        <li>Next: export this list as a one-page PDF for the vendor-risk file.</li>
+      </ol>
+    </div>
+    <div class="door">
+      <div class="eyebrow">Door 3</div>
+      <div class="who">CEO</div>
+      <div class="line">The economic buyer who has to pay for it</div>
+      <ol>
+        <li>One sentence: “Software you run on your own servers or cloud account that stores huge data cheaply and queries it in SQL, built on open formats so you can leave.”</li>
+        <li>Cost card: fixed $500/vCPU/year, $100K minimum, infrastructure separate, no per-query fees (documented). Savings shown as “IOMETE claims 2–5x / 30–60% / 40–60%, figures differ by page”, with links.</li>
+        <li>Market card: Databricks and Snowflake are SaaS-only; Dremio acquired by SAP in 2026; Gartner 2025 Market Guide inclusion.</li>
+        <li>Vendor card: YC W22, founders, 11–50 people, remote across 7 countries, Dell “20+ PB” labelled as an IOMETE-supplied figure.</li>
+        <li>Logo wall with the honesty caption.</li>
+        <li>Next: “Talk to IOMETE” form, persona prefilled, or jump to the CRO door.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="bot">
+  <div class="eyebrow">05 · The bot</div>
+  <h2>A navigator, not a chatbot</h2>
+  <dl class="kv">
+    <dt>Input</dt><dd>One sentence on landing, or a follow-up question on any door.</dd>
+    <dt>Output</dt><dd>Two sentences max, a state chip, one source link, and a page action: scroll to atom, highlight fact, or switch door.</dd>
+    <dt>Grounding</dt><dd>Retrieval over <code>github.com/iomete/iom-docs</code> (MDX mapped to <code>iomete.com/resources/…</code> URLs, <code>internal_docs/</code> excluded), the 44 marketing pages, 38 FAQ items, 3 policies and pricing. About 500 documents, so BM25 or a small embedding index is enough. Authority order: release notes, then deployment and user guide, then legal and pricing, then FAQ and llms.txt, then homepage and blog. Third-party aggregators excluded.</dd>
+    <dt>Facts store</dt><dd><code>content/facts.json</code>: one record per claim with id, text, state, source URL, quoted span, tier and fetch date. UI components render by fact id, so hover citations and the bot share one truth.</dd>
+    <dt>Refusal list</dt><dd>Enforced in code, not prompt. A post-check rejects any answer stating a savings percentage, a certification beyond SOC 2 Type I, “no telemetry”, a named customer, a <code>docs.iomete.com</code> URL, or a headcount or funding figure, unless wrapped as an attributed claim with its URL.</dd>
+    <dt>Model</dt><dd>Claude via the Messages API with four tools: <code>navigate</code>, <code>highlight</code>, <code>switch_persona</code>, <code>cite</code>. Persona is system context, so the same question yields a different door and tone.</dd>
+  </dl>
+</section>
+
+<section id="arch">
+  <div class="eyebrow">06 · Architecture</div>
+  <h2>Small, embeddable, handoff-ready</h2>
+  <div class="grid">
+    <div class="card"><h3>Frontend</h3><p>Next.js and Tailwind with IOMETE's tokens as CSS variables and self-hosted fonts. Single route, persona in the URL (<code>/?p=cro</code>) so a rep can send a link. Framer Motion for the hero. IOMETE images referenced by CDN URL, not re-hosted.</p></div>
+    <div class="card"><h3>Content</h3><p><code>personas.json</code> (door order, captions, atom list), <code>facts.json</code>, and per-atom copy files. No CMS in v1.</p></div>
+    <div class="card"><h3>Backend</h3><p>One API route for the bot (retrieval, Claude, post-check) and one for PDF export. A script clones iom-docs and fetches the 44 pages on a schedule so freshness dates are real.</p></div>
+    <div class="card"><h3>Handoff to IOMETE</h3><p>Embeddable in Webflow as an iframe or custom code block. Bot handoff can point at the HubSpot portal already on the site. This is the route from demo to real tool.</p></div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="eyebrow">07 · Proof, mapped to the rubric</div>
+  <h2>How we show it works</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Criterion</th><th>Weight</th><th>Proof</th></tr></thead>
+    <tbody>
+      <tr><td>Practical impact</td><td>35%</td><td>Before/after. The current site has one H1 for 12 pages and no role routing. Ours gives three visibly different first screens from the same atoms, plus a CRO export that pre-answers part of a vendor-risk file.</td></tr>
+      <tr><td>Buyer clarity</td><td>25%</td><td>15-second test. Five people outside the team watch the hero without sound and write one sentence on what IOMETE is. Pass if four say “runs in your own infrastructure” or equivalent.</td></tr>
+      <tr><td>Accuracy</td><td>25%</td><td>Ten fixed questions with known states. “Is it ISO 27001 certified?” → unknown. “Can it run air-gapped?” → claimed. “What does Enterprise cost?” → documented. Run five times each; one confident wrong answer fails. Show the refusal list executing live.</td></tr>
+      <tr><td>Working execution</td><td>15%</td><td>End to end: land → door → bot question → page moves → citation hover → export PDF.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="build">
+  <div class="eyebrow">08 · Build plan</div>
+  <h2>Phase 0 today, then the real tool</h2>
+  <div class="phase">
+    <div class="card">
+      <div class="eyebrow">Phase 0 · demo · ~9 hours</div>
+      <ol>
+        <li>Scaffold Next.js + Tailwind, port tokens and fonts. 1 h</li>
+        <li>Hero animation, three beats, three doors. 2 h</li>
+        <li>Seed <code>facts.json</code> with ~60 facts from the research notes, each with URL and state. 1 h, parallel</li>
+        <li>Door skeleton + 8 atoms: deployment quartet, comparison cards, pricing cards, badge trio, module chips, controls grid, vendor card, unknown list. 3 h</li>
+        <li>Bot: BM25 over FAQ, pricing and 20 key docs pages; Claude with 4 tools; regex post-check. 2 h, parallel</li>
+        <li>Ten-question accuracy run, screenshots of three doors, 15-second test with five people. 1 h</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Phase 1 · real tool · week of 3 Nov</div>
+      <p>Full iom-docs ingestion with scheduled refresh. Embedding index. PDF export. CISO and CFO doors. Analytics on which atoms each persona dwells on. A fix list for IOMETE's own site delivered as a PR-style document.</p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Phase 2 · handoff</div>
+      <p>Webflow embed. HubSpot handoff. A facts-store owner at IOMETE. A review loop where an IOMETE engineer grades 30 bot answers against the cited URL and approved edits flow back with a new freshness date.</p>
+    </div>
+  </div>
+  <h3>Open decisions</h3>
+  <ol>
+    <li>CRO as Chief Risk Officer (assumed) or Chief Revenue Officer. Changes the door's content, not the build.</li>
+    <li>Whether to show the logo wall on the CEO door at all, given no case study backs it.</li>
+    <li>Whether the bot speaks on the landing screen or only after a door is chosen. The plan assumes both.</li>
+  </ol>
+</section>
+
+<footer>Sources: the full research report and the 524-line component inventory of iomete.com, both in the project's <code>reports/</code> and <code>research_notes/</code> folders. Every fact above traces to a URL recorded there. Site inventory taken 1 Nov 2026.</footer>
+</div>
+</body>
+</html>

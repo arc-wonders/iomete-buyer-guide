@@ -1,0 +1,591 @@
+{
+ "checkedAt": "2026-11-01",
+ "states": {
+  "documented": "Backed by IOMETE docs, release notes, legal or pricing pages.",
+  "claimed": "IOMETE marketing copy. Quoted with attribution, not verified independently.",
+  "unknown": "Not stated in any public source we could find. Ask IOMETE."
+ },
+ "facts": [
+  {
+   "id": "what.one-liner",
+   "state": "documented",
+   "text": "IOMETE is software you install on your own Kubernetes, on-premises or in your cloud account. It stores large data cheaply and lets you query it with SQL and Spark.",
+   "quote": "A sovereign data lakehouse, self-hosted in your trusted environment.",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage"
+  },
+  {
+   "id": "what.stack",
+   "state": "documented",
+   "text": "Built on Apache Spark for compute and Apache Iceberg for tables, deployed as a Helm chart into Kubernetes.",
+   "quote": "iomete/iomete-data-plane-enterprise",
+   "url": "https://iomete.com/resources/deployment/on-prem/install",
+   "source": "Install guide"
+  },
+  {
+   "id": "what.not-saas",
+   "state": "documented",
+   "text": "IOMETE does not host your data. The software processes data only inside your environment.",
+   "quote": "The Software processes Customer Data exclusively within the Customer Environment.",
+   "url": "https://iomete.com/policies/software-license-agreement",
+   "source": "Software License Agreement, preamble",
+   "keywords": "where does data live stored stay host hosted saas cloud service vendor hold"
+  },
+  {
+   "id": "what.license",
+   "state": "documented",
+   "text": "The platform is proprietary, licensed software. It is built on open-source engines but is not itself open source.",
+   "quote": "LAST UPDATED: MAR 16, 2026",
+   "url": "https://iomete.com/policies/software-license-agreement",
+   "source": "Software License Agreement",
+   "keywords": "open source open-source is iomete open source proprietary licence license closed source free software"
+  },
+  {
+   "id": "what.open-formats",
+   "state": "documented",
+   "text": "Tables are stored as Apache Iceberg in your object store, so other Iceberg-capable engines can read them if you leave.",
+   "quote": "BUILT ON OPEN SO",
+   "url": "https://iomete.com/product/architecture/open-source",
+   "source": "IOMETE architecture page",
+   "keywords": "lock-in leave exit portability migrate away open format"
+  },
+  {
+   "id": "deploy.models",
+   "state": "documented",
+   "text": "Runs on-premises, in public cloud Kubernetes (EKS, AKS, GKE), in private cloud (OpenShift, VMware Tanzu), or hybrid.",
+   "quote": "Amazon EKS · Azure AKS · Google GKE · OpenShift support · VMware Tanzu",
+   "url": "https://iomete.com/product/deployment",
+   "source": "Deployment page",
+   "keywords": "kubernetes distributions eks aks gke openshift tanzu where run cloud on-prem"
+  },
+  {
+   "id": "deploy.nutanix",
+   "state": "documented",
+   "text": "Nutanix Kubernetes Platform (NKP) has its own install guide.",
+   "quote": "Installing on Nutanix Kubernetes Platform (NKP)?",
+   "url": "https://iomete.com/resources/deployment/on-prem/install",
+   "source": "Install guide"
+  },
+  {
+   "id": "deploy.airgap",
+   "state": "claimed",
+   "text": "Air-gapped deployment is claimed on the deployment page and FAQ, but no offline install procedure, image list or offline update path is published.",
+   "quote": "Support for air-gapped environments",
+   "url": "https://iomete.com/product/deployment",
+   "source": "Deployment page",
+   "keywords": "air-gapped airgapped offline disconnected no internet"
+  },
+  {
+   "id": "deploy.minimums",
+   "state": "documented",
+   "text": "Minimum footprint: 12 CPU cores and 24 GB RAM for IOMETE services, plus at least one 4-core, 32 GB node for Spark.",
+   "quote": "IOMETE services: at least 12 CPU cores and 24GB of RAM … Spark workloads: at least one node with 4 CPU cores and 32GB of RAM",
+   "url": "https://iomete.com/resources/deployment/on-prem/install",
+   "source": "Install guide"
+  },
+  {
+   "id": "deploy.storage",
+   "state": "documented",
+   "text": "Works with S3, Azure Blob/ADLS, GCS, MinIO, Dell ECS, Ozone, IBM COS and other S3-compatible object stores.",
+   "quote": "S3-compatible",
+   "url": "https://iomete.com/resources/deployment/on-prem/install",
+   "source": "Install guide"
+  },
+  {
+   "id": "deploy.terraform",
+   "state": "documented",
+   "text": "Terraform install is available for Azure only.",
+   "quote": "currently available for Azure",
+   "url": "https://iomete.com/resources/deployment/on-prem/install",
+   "source": "Install guide"
+  },
+  {
+   "id": "deploy.time",
+   "state": "claimed",
+   "text": "IOMETE says a cloud install takes about 25 minutes (about 15 for Terraform plus 5 for Helm).",
+   "quote": "a standard deployment takes approximately 25 minutes",
+   "url": "https://iomete.com/resources/blog/data-lakehouse-for-regulated-enterprises",
+   "source": "IOMETE blog",
+   "keywords": "install time how long takes minutes quick deploy duration setup"
+  },
+  {
+   "id": "deploy.k8s-matrix",
+   "state": "unknown",
+   "text": "No supported Kubernetes version matrix is published.",
+   "quote": "",
+   "url": "",
+   "source": ""
+  },
+  {
+   "id": "arch.planes",
+   "state": "documented",
+   "text": "Version 4.0.0 (Sep 30, 2026) split a control plane from multiple data planes. An older multi-cluster doc page still says there is no unified control plane.",
+   "quote": "Calls between a control plane and its data planes are verified with a shared trust secret.",
+   "url": "https://iomete.com/resources/deployment/on-prem/release-notes",
+   "source": "Platform release notes v4.0.0"
+  },
+  {
+   "id": "arch.version",
+   "state": "documented",
+   "text": "Current platform release is 4.0.1 (Oct 8, 2026). Spark images 3.5.7-v7 and the first Spark 4 image, 4.1.3-v1, both shipped Oct 1, 2026.",
+   "quote": "Platform 4.0.1 (October 8, 2026)",
+   "url": "https://iomete.com/resources/deployment/on-prem/release-notes",
+   "source": "Platform and Spark release notes",
+   "keywords": "version latest release current spark iceberg"
+  },
+  {
+   "id": "arch.endpoints",
+   "state": "documented",
+   "text": "Compute clusters expose HiveServer2 (JDBC/ODBC), Spark Connect and Arrow Flight endpoints.",
+   "quote": "HiveServer2 JDBC … Spark Connect … Arrow Flight",
+   "url": "https://iomete.com/resources/deployment/architecture-deployment",
+   "source": "Deployment architecture"
+  },
+  {
+   "id": "feat.modules",
+   "state": "documented",
+   "text": "Includes compute clusters, a SQL editor, Spark jobs with an orchestrator, Jupyter containers, a data catalog, data security policies and event streams.",
+   "quote": "Data Lakehouse(s), Data Catalog, SQL Editor, Advanced Data Controls, Spark Jobs, ML Notebooks, Spark Connect, Orchestration Engine",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage"
+  },
+  {
+   "id": "feat.integrations",
+   "state": "documented",
+   "text": "Integrations: dbt (dbt-iomete adapter), Airflow plugin, Power BI and Tableau connectors, JDBC/ODBC drivers.",
+   "quote": "dbt-iomete | 1.8.3",
+   "url": "https://iomete.com/resources/deployment/on-prem/release-notes/integrations",
+   "source": "Integrations release notes"
+  },
+  {
+   "id": "feat.mcp",
+   "state": "documented",
+   "text": "An MCP server for AI agents is available in beta.",
+   "quote": "MCP Server for AI Agents",
+   "url": "https://iomete.com/roadmap",
+   "source": "Roadmap"
+  },
+  {
+   "id": "feat.table-maint",
+   "state": "documented",
+   "text": "Automated Iceberg table maintenance is in beta and works only for some catalog types.",
+   "quote": "Not every catalog supports automated maintenance",
+   "url": "https://iomete.com/resources/user-guide/table-maintenance/overview",
+   "source": "Table maintenance guide"
+  },
+  {
+   "id": "feat.lineage",
+   "state": "documented",
+   "text": "Data lineage is not shipped. It sits in the roadmap backlog, although homepage copy mentions lineage.",
+   "quote": "Data Lineage Backlog",
+   "url": "https://iomete.com/roadmap",
+   "source": "Roadmap",
+   "keywords": "lineage data lineage provenance"
+  },
+  {
+   "id": "feat.no-cli",
+   "state": "unknown",
+   "text": "No IOMETE command-line tool is documented.",
+   "quote": "",
+   "url": "",
+   "source": ""
+  },
+  {
+   "id": "feat.university",
+   "state": "documented",
+   "text": "IOMETE University offers 9 free videos in 3 modules: compute clusters, connections and troubleshooting, and Apache Iceberg.",
+   "quote": "",
+   "url": "https://iomete.com/university",
+   "source": "IOMETE University"
+  },
+  {
+   "id": "sec.sso",
+   "state": "documented",
+   "text": "Single sign-on via SAML 2.0 and OIDC (Okta, OneLogin, Microsoft Entra ID), SCIM provisioning, and LDAP / Active Directory sync.",
+   "quote": "local credentials, LDAP directory sync, or federated identity via SAML/OIDC (Okta, OneLogin, Microsoft Entra ID, SCIM provisioning)",
+   "url": "https://iomete.com/resources/user-guide/security-overview",
+   "source": "Security overview",
+   "keywords": "sso okta entra azure ad active directory saml oidc ldap scim login"
+  },
+  {
+   "id": "sec.mfa",
+   "state": "documented",
+   "text": "Multi-factor authentication is delegated to your identity provider. IOMETE does not enforce it itself.",
+   "quote": "you can enable fine-grained access control, such as multi-factor authentication, via your identity provider",
+   "url": "https://iomete.com/resources/user-guide/single-sign-on",
+   "source": "SSO guide",
+   "keywords": "mfa 2fa multi-factor two-factor"
+  },
+  {
+   "id": "sec.masking",
+   "state": "documented",
+   "text": "Seven masking types (redact, hash, null, show last 4, show first 4, year only, custom SQL) applied dynamically in query results.",
+   "quote": "Mask Show Last 4 -- Show only the last four characters. - Mask Show First 4 -- Show only the first four characters. - Mask Hash",
+   "url": "https://iomete.com/resources/user-guide/data-security/data-masking",
+   "source": "Data masking guide"
+  },
+  {
+   "id": "sec.policies",
+   "state": "documented",
+   "text": "Resource-based and tag-based access policies over databases, tables and columns, plus row filters and data masking.",
+   "quote": "IOMETE has two types of policies: resource-based and tag-based.",
+   "url": "https://iomete.com/resources/user-guide/data-security/overview",
+   "source": "Data security guide"
+  },
+  {
+   "id": "sec.audit",
+   "state": "documented",
+   "text": "Audit events and data-access decisions are written to Iceberg system tables (platform_event_logs, data_access_audit).",
+   "quote": "stores all platform audit events",
+   "url": "https://iomete.com/resources/user-guide/system-tables",
+   "source": "System tables guide"
+  },
+  {
+   "id": "sec.netpol",
+   "state": "documented",
+   "text": "Ships Kubernetes NetworkPolicies that restrict traffic between IOMETE namespaces and Jupyter containers.",
+   "quote": "using the label `iomete.com/managed: \"true\"`",
+   "url": "https://iomete.com/resources/deployment/network-policies",
+   "source": "Network policies guide"
+  },
+  {
+   "id": "sec.secrets",
+   "state": "documented",
+   "text": "Platform secrets are encrypted with AES-256-GCM since v4.0.0, with optional HashiCorp Vault.",
+   "quote": "encrypted with AES-256-GCM and scoped per domain",
+   "url": "https://iomete.com/resources/deployment/on-prem/release-notes",
+   "source": "Platform release notes v4.0.0"
+  },
+  {
+   "id": "sec.at-rest",
+   "state": "documented",
+   "text": "Encryption of the data itself is your object store's and key manager's job. IOMETE does not hold your encryption keys.",
+   "quote": "does not hold or manage your encryption keys",
+   "url": "https://iomete.com/resources/blog/data-lakehouse-for-regulated-enterprises",
+   "source": "IOMETE blog",
+   "keywords": "encrypt encrypted encryption at rest kms keys byok own keys"
+  },
+  {
+   "id": "sec.cves",
+   "state": "documented",
+   "text": "Release notes record repeated CVE fixes, most recently in v4.0.0 and v4.0.1.",
+   "quote": "Resolved critical and high-severity CVEs in the backend services",
+   "url": "https://iomete.com/resources/deployment/on-prem/release-notes",
+   "source": "Platform release notes"
+  },
+  {
+   "id": "sec.soc2",
+   "state": "documented",
+   "text": "SOC 2 Type I report, December 2022, audited by Prescient Assurance. The homepage shows a \"SOC2 Certified\" badge without stating the type.",
+   "quote": "achieved SOC 2 Type I compliance",
+   "url": "https://iomete.com/resources/blog/soc-achievement",
+   "source": "IOMETE blog, Dec 2022",
+   "keywords": "soc 2 soc2 type i type 1 report certified"
+  },
+  {
+   "id": "sec.badges",
+   "state": "claimed",
+   "text": "The homepage shows HIPAA Compliant and GDPR Compliant badges with no stated scope or assessor.",
+   "quote": "SOC2 Certified · HIPAA Compliant · GDPR Compliant",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage",
+   "keywords": "hipaa gdpr compliant badge"
+  },
+  {
+   "id": "sec.trust-center",
+   "state": "documented",
+   "text": "A Vanta-hosted trust center exists. Its contents must be read there directly.",
+   "quote": "",
+   "url": "https://app.vanta.com/iomete.com/trust/mh7heslsoonlhblghsro7g",
+   "source": "Vanta trust center"
+  },
+  {
+   "id": "sec.telemetry",
+   "state": "documented",
+   "text": "The licence lets IOMETE collect usage data such as logs, telemetry and performance metrics, excluding customer data. So \"nothing phones home\" cannot be assumed.",
+   "quote": "IOMETE may collect and use Usage Data … logs, telemetry, performance metrics, and metadata",
+   "url": "https://iomete.com/policies/software-license-agreement",
+   "source": "Software License Agreement §4.2",
+   "keywords": "phone home telemetry usage data call home metrics collect"
+  },
+  {
+   "id": "sec.support-access",
+   "state": "documented",
+   "text": "IOMETE staff access customer data only when a statement of work authorises it, read-only, using credentials the customer controls.",
+   "quote": "IOMETE will only access Customer Data when such access is specifically authorized in the applicable SOW",
+   "url": "https://iomete.com/policies/software-license-agreement",
+   "source": "Software License Agreement §10.4",
+   "keywords": "staff access see our data vendor access support engineer"
+  },
+  {
+   "id": "sec.type2",
+   "state": "unknown",
+   "text": "SOC 2 Type II: not public. A Sep 2026 job posting listed it as readiness work.",
+   "quote": "",
+   "url": "https://builtinlondon.uk/job/compliance-finance-operations-lead/9349489",
+   "source": "Job posting (third party)",
+   "keywords": "soc 2 soc2 type ii type 2 type-ii report certified"
+  },
+  {
+   "id": "sec.iso27001",
+   "state": "unknown",
+   "text": "ISO 27001: not public. A Sep 2026 job posting listed it as readiness work.",
+   "quote": "",
+   "url": "https://builtinlondon.uk/job/compliance-finance-operations-lead/9349489",
+   "source": "Job posting (third party)",
+   "keywords": "iso 27001 iso27001 isms certified certification"
+  },
+  {
+   "id": "sec.breach",
+   "state": "unknown",
+   "text": "Breach-notification window: not stated in the licence or privacy policy.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "breach notification notify incident window hours"
+  },
+  {
+   "id": "sec.pentest",
+   "state": "unknown",
+   "text": "Penetration test cadence or summary: not public.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "pen test pentest penetration test report third-party security assessment"
+  },
+  {
+   "id": "sec.sbom",
+   "state": "unknown",
+   "text": "SBOM and container image signing: not documented.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "sbom software bill of materials image signing signed images cosign supply chain"
+  },
+  {
+   "id": "sec.retention",
+   "state": "unknown",
+   "text": "Audit log retention period and SIEM export: not documented.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "audit log logs retained retention how long kept siem splunk export"
+  },
+  {
+   "id": "sec.dpa",
+   "state": "unknown",
+   "text": "The Data Processing Addendum and Security Addendum are referenced in the licence but not published.",
+   "quote": "",
+   "url": "https://iomete.com/policies/software-license-agreement",
+   "source": "Software License Agreement §2.3, §3.1",
+   "keywords": "dpa data processing addendum security addendum"
+  },
+  {
+   "id": "sec.mtls",
+   "state": "unknown",
+   "text": "Service-to-service mutual TLS and TLS versions: not documented.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "mtls mutual tls tls version encryption in transit"
+  },
+  {
+   "id": "sec.backup",
+   "state": "unknown",
+   "text": "Backup and disaster-recovery procedures: not documented.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "backup disaster recovery dr restore"
+  },
+  {
+   "id": "price.free",
+   "state": "documented",
+   "text": "Free plan: no licence cost, up to 100 vCPUs, core features, community support. Access is reviewed manually.",
+   "quote": "Zero · Max 100 vCPUs",
+   "url": "https://iomete.com/pricing",
+   "source": "Pricing page",
+   "keywords": "free tier community edition trial try"
+  },
+  {
+   "id": "price.enterprise",
+   "state": "documented",
+   "text": "Enterprise: $500 per vCPU per year, with a $100,000 per year minimum (200 vCPUs). Adds data masking, row-level security, auditing and enterprise support.",
+   "quote": "$500 license cost per vCPU per year · $100,000 per year (200 vCPU) minimum commitment",
+   "url": "https://iomete.com/pricing",
+   "source": "Pricing page",
+   "keywords": "enterprise cost price how much licence minimum contract commitment annual"
+  },
+  {
+   "id": "price.bc",
+   "state": "documented",
+   "text": "Business Critical: custom price, $250,000 per year minimum, adds multi-region and dedicated engineers.",
+   "quote": "$250,000 per year minimum commitment",
+   "url": "https://iomete.com/pricing",
+   "source": "Pricing page"
+  },
+  {
+   "id": "price.infra",
+   "state": "documented",
+   "text": "The $500 per vCPU per year is the software licence only. Your own cloud or hardware costs come on top.",
+   "quote": "IOMETE charges $500 per vCPU per year for software licensing. That's it.",
+   "url": "https://iomete.com/resources/blog/fortune-500-cost-reduction-self-hosted-vs-saas-tco",
+   "source": "IOMETE TCO blog"
+  },
+  {
+   "id": "price.no-per-query",
+   "state": "claimed",
+   "text": "IOMETE says there are no per-query or per-user fees.",
+   "quote": "there are no per-query or per-user fees",
+   "url": "https://iomete.com/faq",
+   "source": "IOMETE FAQ"
+  },
+  {
+   "id": "price.support-sla",
+   "state": "documented",
+   "text": "Support tiers Silver, Gold and Platinum publish Sev-1 response targets of 1 hour, 1 hour and 30 minutes. Gold's was relaxed from 30 minutes to 1 hour in 2026.",
+   "quote": "SLA response times SEV 1 1 hour",
+   "url": "https://iomete.com/pricing",
+   "source": "Pricing page",
+   "keywords": "support sla response time severity sev1 silver gold platinum"
+  },
+  {
+   "id": "price.support-cost",
+   "state": "unknown",
+   "text": "Support tier prices, onboarding and professional services rates, and volume discounts are not published.",
+   "quote": "",
+   "url": "https://iomete.com/pricing",
+   "source": "Pricing page",
+   "keywords": "support price support cost support tier support plan silver gold platinum onboarding professional services discount how much"
+  },
+  {
+   "id": "price.marketplace",
+   "state": "unknown",
+   "text": "No AWS, Azure or Google Cloud marketplace listing was found.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "aws marketplace azure marketplace gcp marketplace buy through"
+  },
+  {
+   "id": "price.savings",
+   "state": "claimed",
+   "text": "IOMETE's savings claims differ by page: \"2-5x\" on the homepage, \"30-60%\" in the FAQ, \"40-60% lower TCO\" on the blog. One of its own worked examples shows about a 1% saving.",
+   "quote": "Save 2-5x over SaaS/cloud.",
+   "url": "https://iomete.com/",
+   "source": "Homepage, FAQ, TCO blog",
+   "keywords": "cheaper savings save tco roi compared databricks snowflake"
+  },
+  {
+   "id": "price.history",
+   "state": "documented",
+   "text": "The pricing model has changed three times since 2023: per core per month, then per vCPU-hour, then the current per vCPU per year.",
+   "quote": "",
+   "url": "https://web.archive.org/web/2023*/iomete.com/pricing",
+   "source": "Wayback Machine"
+  },
+  {
+   "id": "co.founded",
+   "state": "documented",
+   "text": "Founded 2021, Y Combinator Winter 2022. Founders Vusal Dadalov (CEO) and Piet Jan de Bruin (COO).",
+   "quote": "OUR FOUNDERS / Vusal Dadalov and Piet Jan de Bruin",
+   "url": "https://iomete.com/about-us",
+   "source": "About page"
+  },
+  {
+   "id": "co.size",
+   "state": "documented",
+   "text": "LinkedIn lists 11–50 employees. The headquarters address is in Mountain View, California.",
+   "quote": "",
+   "url": "https://www.linkedin.com/company/iomete/",
+   "source": "LinkedIn company page",
+   "keywords": "employees headcount team size how big how many people staff work at iomete company"
+  },
+  {
+   "id": "co.funding",
+   "state": "unknown",
+   "text": "Total funding is not disclosed. Public sources conflict and suggest under $3M.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "funding raised investors money valuation"
+  },
+  {
+   "id": "co.gartner",
+   "state": "documented",
+   "text": "Included in the 2025 Gartner Market Guide for Data Lakehouse Platforms. A market guide is an overview, not a ranking.",
+   "quote": "A Market Guide from Gartner is not a ranking or a purchase recommendation.",
+   "url": "https://iomete.com/resources/blog/iomete-gartner-market-guide-2025",
+   "source": "IOMETE blog",
+   "keywords": "gartner magic quadrant mq analyst ranking market guide"
+  },
+  {
+   "id": "co.logos",
+   "state": "claimed",
+   "text": "The homepage shows 13 logos (banks and ministries in Azerbaijan and Uzbekistan, Dell, OverDrive, Mercury, Y Combinator) with no caption stating the relationship.",
+   "quote": "",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage",
+   "keywords": "logos customers banks ministries"
+  },
+  {
+   "id": "co.case-studies",
+   "state": "unknown",
+   "text": "No named customer case study is published. The /customers and /case-studies pages return 404.",
+   "quote": "",
+   "url": "",
+   "source": "",
+   "keywords": "customers customer case study references who uses"
+  },
+  {
+   "id": "co.dell",
+   "state": "claimed",
+   "text": "Dell Technologies runs IOMETE across multiple data centers at more than 20 PB. The figure was supplied by IOMETE to the press.",
+   "quote": "covering more than 20 petabytes",
+   "url": "https://webrazzi.com/2026/09/11/kurumlarin-veriyi-kendi-altyapilarinda-tutmasina-odaklanan-girisim-iomete/",
+   "source": "Webrazzi, Sep 2026"
+  },
+  {
+   "id": "co.fde",
+   "state": "documented",
+   "text": "IOMETE offers forward-deployed engineers who work as an extension of your team.",
+   "quote": "We can provide FDEs that become an extension of your team.",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage"
+  },
+  {
+   "id": "mkt.saas-only",
+   "state": "documented",
+   "text": "Databricks and Snowflake are delivered as cloud services on public clouds. Neither is installable on your own hardware.",
+   "quote": "Cloud SaaS solutions such as Databricks and Snowflake run on US public clouds only.",
+   "url": "https://iomete.com/",
+   "source": "iomete.com homepage",
+   "keywords": "databricks snowflake saas compare alternative different difference versus vs"
+  },
+  {
+   "id": "mkt.dremio",
+   "state": "documented",
+   "text": "SAP acquired Dremio, announced May 2026 and closed in July 2026. IOMETE publishes a Dremio migration guide.",
+   "quote": "",
+   "url": "https://iomete.com/resources/blog/dremio-sap-migration-guide",
+   "source": "IOMETE blog"
+  },
+  {
+   "id": "mkt.regs",
+   "state": "claimed",
+   "text": "IOMETE maps its design to DORA, the EU AI Act, GDPR Article 32 and US CLOUD Act concerns. This is IOMETE's interpretation, not a legal opinion.",
+   "quote": "",
+   "url": "https://iomete.com/resources/blog/dora-eu-ai-act-financial-institutions-data-infrastructure",
+   "source": "IOMETE blog"
+  },
+  {
+   "id": "mkt.k8s-skills",
+   "state": "claimed",
+   "text": "Running IOMETE needs Kubernetes skills. IOMETE's answer is its forward-deployed engineers.",
+   "quote": "Field Data Engineers handle the operational side",
+   "url": "https://iomete.com/resources/blog/data-lakehouse-for-regulated-enterprises",
+   "source": "IOMETE blog",
+   "keywords": "kubernetes skills experts expertise ops operate operations team need staff"
+  }
+ ]
+}
