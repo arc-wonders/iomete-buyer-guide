@@ -48,9 +48,8 @@ export function Statements({ atoms, open, setOpen, highlight }: {
     <details className="statements" open={open} onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}>
       <summary>
         <span className="st-eyebrow">The evidence</span>
-        <span className="st-title"><b>{facts.length}</b> sourced statements behind this page</span>
+        <span className="st-title"><b>{facts.length}</b> sources behind this page</span>
         <EvidenceBar facts={facts} />
-        <span className="st-hint">Tap any tile in the picture to jump to its source.</span>
         <span className="st-toggle" aria-hidden="true">{open ? "Hide" : "Read them"}<i /></span>
       </summary>
 

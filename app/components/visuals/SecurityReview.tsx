@@ -53,11 +53,6 @@ function Meter({ label, ids, onPick, seen, delay }: { label: string; ids: string
           </button>
         ))}
       </div>
-      <p className="sr-meter-foot">
-        {(["documented", "claimed", "unknown"] as State[]).filter((s) => c[s]).map((s) => (
-          <span key={s}><Dot state={s} /> {c[s]} {WORD[s]}</span>
-        ))}
-      </p>
     </div>
   );
 }
@@ -204,7 +199,7 @@ function Checklist({ onPick }: { onPick: Pick }) {
             </label>
             <button className="tile sr-q tile-unknown" onClick={() => onPick(id)} title={factById[id]?.text}>
               <span className="sr-q-n">{String(i + 1).padStart(2, "0")}</span>
-              <span className="sr-q-t"><b>{label}</b><small>{factById[id]?.text}</small></span>
+              <span className="sr-q-t"><b>{label}</b></span>
               <Dot state={st(id)} />
             </button>
           </li>
@@ -219,7 +214,6 @@ function Checklist({ onPick }: { onPick: Pick }) {
 export function SecurityReview({ onPick }: { onPick: Pick }) {
   const [ref, seen] = useInView<HTMLDivElement>(0.3);
   const company = [...PAPER, ...OPEN.map(([id]) => id)];
-  const all = count([...CONTROLS, ...company]);
   return (
     <figure className="visual sr" aria-label="Security review scorecard: product controls, attestations and open questions">
       <section className="sr-verdict" ref={ref}>
@@ -227,12 +221,6 @@ export function SecurityReview({ onPick }: { onPick: Pick }) {
           <span className="sr-eyebrow">The scorecard</span>
           <p className="sr-verdict-line">
             Every product control is in the public docs. <span>Most company evidence is not.</span>
-          </p>
-          <p className="sr-verdict-sum">
-            {CONTROLS.length + company.length} things a reviewer looks for:{" "}
-            <span><Dot state="documented" /> {all.documented} documented</span>{" "}
-            <span><Dot state="claimed" /> {all.claimed} IOMETE claims</span>{" "}
-            <span><Dot state="unknown" /> {all.unknown} not public</span>
           </p>
         </div>
         <div className="sr-meters">

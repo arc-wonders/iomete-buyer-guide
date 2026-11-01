@@ -27,21 +27,16 @@ type Cell = { text: string; id?: string; note?: { text: string; id: string } };
 const ROWS: { q: string; saas: Cell; iomete: Cell }[] = [
   { q: "Where it runs",
     saas: { text: "Their service, on a public cloud", id: "mkt.saas-only" },
-    iomete: { text: "Your Kubernetes, on-premises or in your cloud", id: "what.one-liner" } },
+    iomete: { text: "Your Kubernetes, on-prem or your cloud", id: "what.one-liner" } },
   { q: "Who runs it",
     saas: { text: "They do", id: "mkt.saas-only" },
     iomete: { text: "You do", id: "what.one-liner" } },
-  { q: "Where tables live",
-    saas: { text: "Not compared here" },
-    iomete: { text: "Open Apache Iceberg, in your own object store", id: "what.open-formats" } },
   { q: "How you pay",
-    saas: { text: "Their price list. Not compared here" },
-    iomete: { text: "$500 per vCPU a year, plus your own servers", id: "price.infra",
-      note: { text: "“Save 2–5x over SaaS”, says iomete.com. Its other pages say less.", id: "price.savings" } } },
+    saas: { text: "—" },
+    iomete: { text: "$500 per vCPU a year + your servers", id: "price.infra" } },
   { q: "Can you leave",
-    saas: { text: "Not compared here" },
-    iomete: { text: "Other Iceberg engines can read your tables", id: "what.open-formats",
-      note: { text: "The platform itself is proprietary, not open source", id: "what.license" } } },
+    saas: { text: "—" },
+    iomete: { text: "Yes: open Iceberg tables in your object store", id: "what.open-formats" } },
 ];
 
 function CellView({ c, onPick }: { c: Cell; onPick: Pick }) {
@@ -70,8 +65,8 @@ function People() {
 const TIMELINE = [
   { when: "2021", id: "co.founded", text: "IOMETE founded" },
   { when: "2022", id: "co.founded", text: "Y Combinator, Winter 2022" },
-  { when: "2025", id: "co.gartner", text: "In Gartner’s Market Guide for Data Lakehouse Platforms. An overview, not a ranking" },
-  { when: "2026", id: "mkt.dremio", text: "SAP buys Dremio (May–July). IOMETE publishes a Dremio migration guide" },
+  { when: "2025", id: "co.gartner", text: "In Gartner’s lakehouse Market Guide" },
+  { when: "2026", id: "mkt.dremio", text: "SAP buys Dremio" },
 ];
 
 export function WhyNotSaas({ onPick }: { onPick: Pick }) {

@@ -41,11 +41,6 @@ function saveSeen(s: string[]) {
   try { sessionStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch { /* storage blocked: progress just isn't remembered */ }
 }
 
-/** Split the direct answer into a one-line hook and the rest. */
-function splitAnswer(a: string): [string, string] {
-  const m = a.match(/^(.+?[.!?])\s+(?=[A-Z$])(.*)$/s);
-  return m ? [m[1], m[2]] : [a, ""];
-}
 
 /** Swap page content inside a View Transition when the browser has one, so pages crossfade instead of flashing. */
 type VT = { skipTransition: () => void; finished: Promise<void> };
@@ -219,12 +214,11 @@ export default function Experience({ initial }: { initial: string | null }) {
         <main className={`answer v-${intent.slug}`} key={intent.slug}>
           <div className="wrap">
             {(() => {
-              const [hook, rest] = splitAnswer(intent.answer);
               return (
                 <div className="a-head">
                   <Progress current={intent.slug} seen={seen} go={go} />
                   <h1>{intent.question}</h1>
-                  <p className="q-answer"><span className="hook">{hook}</span>{rest && <span className="rest"> {rest}</span>}</p>
+                  <p className="q-answer" title={intent.answer}><span className="hook">{intent.hook}</span></p>
                 </div>
               );
             })()}
@@ -249,7 +243,7 @@ export default function Experience({ initial }: { initial: string | null }) {
                     <span className="nm-icon"><Icon slug={nx.slug} /></span>
                     {t && <span className="nm-big">{t.big}</span>}
                     <span className="nm-q">{nx.question}</span>
-                    {t && <span className="nm-line">{tf && <Dot state={tf.state} />}{t.line}</span>}
+                    {t && tf?.state === "claimed" && <span className="nm-line"><Dot state={tf.state} />IOMETE says</span>}
                     <span aria-hidden="true" className="arrow">→</span>
                     {seen.includes(nx.slug) && <span className="nm-seen">Seen</span>}
                   </button>
@@ -271,7 +265,6 @@ export default function Experience({ initial }: { initial: string | null }) {
             })()}
             {next.length > 0 && (
               <section className="takeaway" aria-label="Take it further">
-                <p className="nextup-hook">Take it further</p>
                 <ul className="next-links">
                   {next.map((n) => {
                     const ext = n.href.startsWith("http");
@@ -279,8 +272,7 @@ export default function Experience({ initial }: { initial: string | null }) {
                       <li key={n.label}>
                         <a href={n.href} target={ext ? "_blank" : undefined} rel="noreferrer"
                           onClick={(e) => { if (n.href.startsWith("/?v=")) { e.preventDefault(); go(intentBySlug[n.href.slice(4)]); } }}>
-                          <b>{n.label}<span aria-hidden="true">{ext ? " ↗" : " →"}</span></b>
-                          {n.note && <span>{n.note}</span>}
+                          {n.label}<span aria-hidden="true">{ext ? " ↗" : " →"}</span>
                         </a>
                       </li>
                     );
@@ -293,26 +285,10 @@ export default function Experience({ initial }: { initial: string | null }) {
       )}
 
       <footer className="footer">
-        <div className="wrap footer-grid">
-          <div>
-            <p className="footer-brand"><svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" /></svg><b>IOMETE</b> in plain words</p>
-            <p>An unofficial guide built at hackCBS 9.0 for IOMETE&apos;s “Make Complex Tech Easy to Buy” track. Not affiliated with or endorsed by IOMETE.</p>
-          </div>
-          <div>
-            <p className="footer-h">The six questions</p>
-            <ul className="footer-qs">
-              {INTENTS.map((i) => (
-                <li key={i.slug} className={seen.includes(i.slug) ? "seen" : ""}>
-                  <a href={`/?v=${i.slug}`} onClick={(e) => { e.preventDefault(); go(i); }}>{i.question}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="footer-h">{FACTS.length} statements, checked {CHECKED_AT}</p>
-            <EvidenceBar facts={FACTS} />
-            <p className="footer-links"><a href="https://iomete.com" target="_blank" rel="noreferrer">iomete.com ↗</a><a href="https://iomete.com/resources" target="_blank" rel="noreferrer">Docs ↗</a><a href="https://github.com/iomete/iom-docs" target="_blank" rel="noreferrer">Docs source ↗</a></p>
-          </div>
+        <div className="wrap footer-row">
+          <p className="footer-brand"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" /></svg><b>IOMETE</b> in plain words</p>
+          <p className="footer-note">Unofficial · not affiliated with IOMETE · {FACTS.length} sourced statements, checked {CHECKED_AT}</p>
+          <p className="footer-links"><a href="https://iomete.com" target="_blank" rel="noreferrer">iomete.com ↗</a><a href="https://iomete.com/resources" target="_blank" rel="noreferrer">Docs ↗</a></p>
         </div>
       </footer>
 

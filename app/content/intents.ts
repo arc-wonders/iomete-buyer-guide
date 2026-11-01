@@ -11,6 +11,8 @@ export interface Intent {
   question: string;
   /** Direct answer shown under the question. Summarises documented facts only. */
   answer: string;
+  /** One short line shown under the question; the picture carries the rest. */
+  hook: string;
   first: string[];
 }
 
@@ -18,36 +20,42 @@ export const INTENTS: Intent[] = [
   {
     slug: "where-data-goes", persona: "cro",
     question: "Where does our data go?",
+    hook: "It stays in your environment.",
     answer: "It stays in your environment. IOMETE runs inside your Kubernetes and your object store and does not host your data. Two things can cross the line: usage data the licence allows, and support access you approve per contract.",
     first: ["perimeter"],
   },
   {
     slug: "security-review", persona: "cro",
     question: "Will this pass our security review?",
+    hook: "Product controls: documented. Company evidence: thin.",
     answer: "The data controls are well documented: SSO, masking, row filters, audit tables. The company-level evidence is thinner: a 2022 SOC 2 Type I, and several questions you will have to put to IOMETE in writing.",
     first: ["controls", "attestations", "open-questions"],
   },
   {
     slug: "what-it-costs", persona: "ceo",
     question: "What does it cost?",
+    hook: "$500 per vCPU a year, $100,000 minimum.",
     answer: "$500 per vCPU per year, with a $100,000 yearly minimum, plus the servers or cloud capacity you run it on. There are no per-query fees.",
     first: ["pricing"],
   },
   {
     slug: "why-not-saas", persona: "ceo",
     question: "Why not just use Databricks or Snowflake?",
+    hook: "They host your data. IOMETE runs on your infrastructure.",
     answer: "Those run as cloud services on someone else's infrastructure. IOMETE runs on yours. You get control over where data lives, and you take on running it.",
     first: ["plain", "market"],
   },
   {
     slug: "what-gets-installed", persona: "fde",
     question: "What would we actually install?",
+    hook: "One Helm chart into your Kubernetes.",
     answer: "One Helm chart into your Kubernetes: a control plane, then a data plane per environment, each running Spark and SQL next to your own object store and PostgreSQL.",
     first: ["architecture", "deploy"],
   },
   {
     slug: "how-hard-to-run", persona: "fde",
     question: "How hard is this to run?",
+    hook: "You need Kubernetes, and someone to run it.",
     answer: "You need a Kubernetes cluster and someone who can operate it. If you don't have that person, IOMETE offers engineers who work as part of your team. Some features are still missing, and they are listed below.",
     first: ["run-it", "not-yet"],
   },

@@ -98,9 +98,6 @@ export function Cost({ onPick }: { onPick: Pick }) {
             <small>prices not published</small>
           </button>
         </div>
-        <button className="bill-sla" onClick={() => onPick("price.support-sla")}>
-          <Dot state="documented" /><span>Support response times <em>are</em> published: Sev-1 in 1 hour (Silver, Gold) or 30 minutes (Platinum)</span>
-        </button>
       </div>
 
       {/* the hooks that lead to the next question */}
