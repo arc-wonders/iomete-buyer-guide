@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { answer, claudeEnabled, corpusStats } from "@/lib/answer";
+import { answer, activeEngine, corpusStats } from "@/lib/answer";
 import type { PersonaId } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -14,5 +14,5 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ engine: claudeEnabled() ? "claude" : "retrieval", ...corpusStats() });
+  return NextResponse.json({ engine: activeEngine(), ...corpusStats() });
 }

@@ -4,7 +4,7 @@ import { INTENTS, type Intent } from "@/content/intents";
 import { TEASERS } from "@/content/teasers";
 import { factById } from "@/lib/facts";
 import type { Answer } from "@/lib/types";
-import { BeatBar, CAPTIONS, HeroDiagram, useBeats } from "./Hero";
+import { CAPTIONS, HeroDiagram, useBeats } from "./Hero";
 import { AnswerBlock } from "./Bot";
 import { Dot, useInView } from "./visuals/shared";
 import { Mini } from "./Landing.minis";
@@ -14,27 +14,38 @@ export default function Landing({ go, onAsk, busy, last, onShow }: {
   go: (i: Intent) => void; onAsk: (q: string) => void; busy: boolean; last?: Answer; onShow: (a: Answer) => void;
 }) {
   const [landingQ, setLandingQ] = useState("");
-  const beats = useBeats();
-  const { beat } = beats;
+  const { beat } = useBeats();
   const [qRef, qIn] = useInView<HTMLElement>(0.12);
   return (
     <main className="landing v-landing">
       <div className="wrap">
         <div className="landing-grid">
           <div className="landing-copy">
-            <p className="lp-eyebrow"><span className="lp-hexdot" aria-hidden="true" />Sovereign data lakehouse, explained</p>
+            <p className="lp-eyebrow"><span className="lp-hexdot" aria-hidden="true" />Sovereign data lakehouse</p>
             <h1>Your data.<br />Your servers.<br />Your rules.</h1>
             <div className="caption-stack" aria-live="polite">
               {CAPTIONS.map((c, i) => <p key={i} className={beat === i ? "on" : ""}>{c}</p>)}
             </div>
-            <BeatBar labels={["What it is", "Where it runs", "Why it matters"]} {...beats} />
+            <form className="hero-ask" onSubmit={(e) => { e.preventDefault(); if (landingQ.trim()) { onAsk(landingQ.trim()); setLandingQ(""); } }}>
+              <label htmlFor="landing-q" className="hero-ask-label">Tell us what you are weighing up</label>
+              <div className="hero-ask-box">
+                <textarea id="landing-q" rows={3} value={landingQ} onChange={(e) => setLandingQ(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); (e.currentTarget.form as HTMLFormElement).requestSubmit(); } }}
+                  placeholder="e.g. We hold 300 TB on-premises, need SOC 2 evidence for procurement, and must shortlist a Databricks alternative by Q2."
+                  autoComplete="off" />
+                <div className="hero-ask-foot">
+                  <span className="hero-ask-hint">Your setup, constraints or deadline.</span>
+                  <button className="btn btn-lime" disabled={busy}>Get the answer</button>
+                </div>
+              </div>
+            </form>
+            {last && <div className="landing-answer"><AnswerBlock a={last} onShow={onShow} /></div>}
           </div>
           <HeroDiagram beat={beat} />
         </div>
 
         <section ref={qRef} className={"questions" + (qIn ? " in" : "")} aria-labelledby="q-head">
           <div className="lp-qhead">
-            <p className="lp-eyebrow">Six questions · every claim sourced</p>
             <h2 id="q-head">What do you want to know first?</h2>
           </div>
           <ul>
@@ -49,7 +60,6 @@ export default function Landing({ go, onAsk, busy, last, onShow }: {
                     {t && (
                       <span className="qc-big">
                         {t.big}
-                        {f?.state === "claimed" && <small>IOMETE claims</small>}
                       </span>
                     )}
                     {t && (
@@ -64,18 +74,6 @@ export default function Landing({ go, onAsk, busy, last, onShow }: {
               );
             })}
           </ul>
-          <form className="askbar" onSubmit={(e) => { e.preventDefault(); if (landingQ.trim()) { onAsk(landingQ.trim()); setLandingQ(""); } }}>
-            <label htmlFor="landing-q" className="sr-only">Ask in your own words</label>
-            <svg className="askbar-icon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-              <circle cx="8" cy="8" r="5.5" /><path d="m12.2 12.2 3.8 3.8" />
-            </svg>
-            <input id="landing-q" value={landingQ} onChange={(e) => setLandingQ(e.target.value)}
-              placeholder="Ask anything, or tell us your role" autoComplete="off" />
-            <button className="btn btn-lime" disabled={busy}>Ask</button>
-          </form>
-          {last && (
-            <div className="landing-answer"><AnswerBlock a={last} onShow={onShow} /></div>
-          )}
         </section>
       </div>
     </main>

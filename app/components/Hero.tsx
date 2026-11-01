@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 export const CAPTIONS = [
   "A data lakehouse: huge amounts of data, stored cheaply, queried with SQL.",
   "Installed on your own Kubernetes: your data center or your cloud account.",
-  "Your data stays inside. IOMETE says there are no per-query fees.",
+  "Your data stays inside. No per-query or per-user fees.",
 ];
 
-/** Three beats, about 5 s each; the whole story fits in 15 seconds. Play, pause and replay like a short clip. */
+/** Three beats, about 5 s each, cycling on their own. Reduced motion shows the last frame and stays there. */
 export function useBeats(total = 3, ms = 5000) {
   const [beat, setBeat] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -17,47 +17,10 @@ export function useBeats(total = 3, ms = 5000) {
   }, [total]);
   useEffect(() => {
     if (!playing) return;
-    if (beat >= total - 1) { const t = setTimeout(() => setPlaying(false), ms); return () => clearTimeout(t); }
-    const t = setTimeout(() => setBeat((b) => Math.min(b + 1, total - 1)), ms);
+    const t = setTimeout(() => setBeat((b) => (b + 1) % total), ms);
     return () => clearTimeout(t);
   }, [beat, playing, total, ms]);
-  const done = !playing && beat === total - 1;
-  return {
-    beat, playing, done, ms,
-    setBeat: (b: number) => { setPlaying(false); setBeat(b); },
-    toggle: () => { if (done) { setBeat(0); setPlaying(true); } else setPlaying((p) => !p); },
-  };
-}
-
-/** Segmented progress: one bar per beat, the current one fills while playing. */
-export function BeatBar({ labels, beat, playing, done, ms, setBeat, toggle }: {
-  labels: string[]; beat: number; playing: boolean; done: boolean; ms: number;
-  setBeat: (b: number) => void; toggle: () => void;
-}) {
-  return (
-    <div className="beatbar">
-      <button className="beat-toggle" onClick={toggle} aria-label={done ? "Replay" : playing ? "Pause" : "Play"}>
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" fill="currentColor">
-          {done ? <path d="M7 2a5 5 0 1 1-4.6 3H.8L3.4 2 6 5H4.2A3.4 3.4 0 1 0 7 3.6z" />
-            : playing ? <><rect x="3" y="2" width="3" height="10" rx="1" /><rect x="8" y="2" width="3" height="10" rx="1" /></>
-            : <path d="M4 2v10l8-5z" />}
-        </svg>
-      </button>
-      <ol>
-        {labels.map((l, i) => (
-          <li key={i}>
-            <button onClick={() => setBeat(i)} aria-current={beat === i ? "step" : undefined} aria-label={`Step ${i + 1}: ${l}`}>
-              <span className="track"><span
-                key={`${i}-${beat}-${playing}`}
-                className={"fill" + (i < beat || (i === beat && !playing) ? " full" : i === beat ? " run" : "")}
-                style={{ animationDuration: `${ms}ms` }} /></span>
-              <span className="lbl">{l}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
+  return { beat, playing, ms };
 }
 
 /* ---------- the stage ---------- */
@@ -129,6 +92,10 @@ function EnvIcon({ kind, x, y }: { kind: Env["kind"]; x: number; y: number }) {
 function Stage({ g, id, className }: { g: Geo; id: string; className: string }) {
   const { per, hex, sql, tables } = g;
   const sqlW = Math.round(g.fs * 3.6 + 24);
+  // where the perimeter would sit if it were centred in the frame (SaaS boxes live to its right on desktop, below on phones)
+  const sideways = g.saas[0].wall.x !== g.saas[0].x;
+  const cx = sideways ? Math.round((g.w - per.w) / 2 - per.x) : 0;
+  const cy = sideways ? 0 : Math.round((g.h - per.h) / 2 - per.y);
   const slab = (i: number) => {
     const w = tables.w, d = w * 0.28, t = 7, y = tables.y - i * 13;
     const top = `${tables.x - w / 2},${y} ${tables.x},${y - d} ${tables.x + w / 2},${y} ${tables.x},${y + d}`;
@@ -156,6 +123,8 @@ function Stage({ g, id, className }: { g: Geo; id: string; className: string }) 
         </linearGradient>
       </defs>
 
+      {/* Until the SaaS boxes appear, the scene sits centred; it slides over to make room for them. */}
+      <g className="hs-scene" style={{ ["--hs-center" as string]: `translate(${cx}px, ${cy}px)` }}>
       {/* perimeter: your infrastructure (from beat 2, "where it runs") */}
       <g className="f1">
         <path d={rrect(per.x, per.y, per.w, per.h, per.r)} fill={`url(#${id}-per)`} />
@@ -211,6 +180,8 @@ function Stage({ g, id, className }: { g: Geo; id: string; className: string }) 
           </g>
         );
       })}
+
+      </g>
 
       {/* beat 3: SaaS outside, reaching in, cut at the wall */}
       <g className="f2">

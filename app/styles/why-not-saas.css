@@ -83,19 +83,16 @@
 .v-why-not-saas .wns-when { position: relative; z-index: 1; justify-self: center; font-family: var(--wns-mono); font-size: .8rem; padding: 3px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--rule); }
 .v-why-not-saas .wns-time li:last-child .wns-when { background: var(--lime); border-color: var(--lime); }
 .v-why-not-saas .wns-what { font-size: .98rem; line-height: 1.4; }
-.v-why-not-saas .wns-stats { margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.v-why-not-saas .wns-stat { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 16px; background: var(--wns-stone); transition: background .2s; }
-.v-why-not-saas .wns-stat:hover { background: #e9e4df; }
-.v-why-not-saas .wns-stat b { font-family: var(--display); font-weight: 300; font-size: 2.2rem; line-height: 1; letter-spacing: -.02em; padding-right: 14px; white-space: nowrap; }
-.v-why-not-saas .wns-stat span { font-size: .9rem; line-height: 1.35; color: var(--ink-2); }
-.v-why-not-saas .wns-stat .dot { position: absolute; top: 16px; right: 16px; }
-.v-why-not-saas .wns-stat-people { grid-column: 1 / -1; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.v-why-not-saas .wns-stat-txt { display: flex; flex-direction: column; gap: 4px; }
-.v-why-not-saas .wns-people { width: 170px; height: auto; margin-right: 22px; flex: none; }
-.v-why-not-saas .wns-stat-unknown { background: #fbf1ee; }
-.v-why-not-saas .wns-stat-unknown:hover { background: #f7e2dc; }
-.v-why-not-saas .wns-stat-unknown b { color: var(--unknown); }
-.v-why-not-saas .wns-stat-claimed b { color: var(--claimed); }
+.v-why-not-saas .wns-cmp { width: 100%; margin-top: 14px; border-collapse: separate; border-spacing: 0; font-size: .92rem; }
+.v-why-not-saas .wns-cmp th, .v-why-not-saas .wns-cmp td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+.v-why-not-saas .wns-cmp thead th { font-family: var(--wns-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 6px; }
+.v-why-not-saas .wns-cmp tbody th { font-weight: 500; color: var(--ink-2); width: 32%; }
+.v-why-not-saas .wns-cmp td { color: var(--ink-2); }
+.v-why-not-saas .wns-cmp td.wns-cmp-io { color: var(--ink); background: var(--green-soft, #eef4e6); }
+.v-why-not-saas .wns-cmp thead th.wns-cmp-io { color: var(--ink); background: var(--lime); border-radius: 10px 10px 0 0; }
+.v-why-not-saas .wns-cmp tbody tr:last-child td.wns-cmp-io { border-radius: 0 0 10px 10px; }
+.v-why-not-saas .wns-cmp td.wns-cmp-io button { text-align: left; font: inherit; color: inherit; width: 100%; }
+.v-why-not-saas .wns-cmp tbody tr:last-child th, .v-why-not-saas .wns-cmp tbody tr:last-child td { border-bottom: 0; }
 
 /* ---------- narrow ---------- */
 @media (max-width: 760px) {
@@ -108,6 +105,8 @@
   .v-why-not-saas .wns-row > h3 { grid-column: 1 / -1; padding: 14px 0 6px; }
   .v-why-not-saas .wns-head > span:first-child { display: none; }
   .v-why-not-saas .wns-head > span { padding: 0 8px 10px; font-size: 1rem; }
+  .v-why-not-saas .wns-cmp { font-size: .86rem; }
+  .v-why-not-saas .wns-cmp th, .v-why-not-saas .wns-cmp td { padding: 8px 8px; }
   .v-why-not-saas .wns-row > div { padding: 6px 6px 10px; justify-content: flex-start; border-radius: 12px; margin-bottom: 10px; }
   .v-why-not-saas .wns-glance .wns-f { font-size: .93rem; }
   .v-why-not-saas .wns-glance .wns-note { font-size: .82rem; }

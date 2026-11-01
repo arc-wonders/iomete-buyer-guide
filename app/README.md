@@ -1,4 +1,4 @@
-# IOMETE, explained for you
+# IOMETE
 
 A persona-routed rebuild of iomete.com for the hackCBS 9.0 IOMETE track, "Make Complex Tech Easy to Buy".
 
@@ -33,7 +33,7 @@ npm run build && npm start   # http://localhost:3107  (pages are /?v=<question-s
 
 To refresh the docs source first: `git clone --depth 1 https://github.com/iomete/iom-docs ../vendor/iom-docs`.
 
-Optional Claude mode: copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`. See "Bot engines" below.
+Optional model mode: copy `.env.example` to `.env.local` and set `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY`). See "Bot engines" below.
 
 ## Tests
 
@@ -84,6 +84,8 @@ scripts/               corpus builder, accuracy harness, e2e test, Claude mock
 **Bot engines**
 
 - *Retrieval* (default, no credentials): steps above. Deterministic and covered by the test suite.
+- *Gemini* (`gemini-3.7-flash`, temperature 0, plain JSON string output parsed and checked in code): used whenever `GEMINI_API_KEY` is set. Same
+  prompt, same code-side citation and refusal checks as the Claude path below, same fallback to retrieval.
 - *Claude* (`claude-opus-5-5`, low effort, structured JSON output, server-side refusal fallback): Claude writes the
   two sentences from the top facts and passages only. The server then rejects any answer that cites an id it was not
   given or trips the refusal guard, and falls back to retrieval. Verified against `scripts/mock-claude.mjs`

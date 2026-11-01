@@ -61,7 +61,7 @@ function Wide({ onPick }: { onPick: Pick }) {
       </defs>
 
       {/* 1. Helm chart */}
-      <Hit id="deploy.time" onPick={onPick} label="Helm chart install: about 25 minutes, IOMETE says" className="wgi-a wgi-helm" d={0}>
+      <Hit id="deploy.time" onPick={onPick} label="Helm chart install: about 25 minutes" className="wgi-a wgi-helm" d={0}>
         <rect x="405" y="8" width="230" height="52" rx="12" fill="#202020" />
         <g transform="translate(432 34)" stroke="#d3f52c" strokeWidth="1.6" fill="none">
           <circle r="9" />
@@ -73,8 +73,7 @@ function Wide({ onPick }: { onPick: Pick }) {
         <text x="576" y="39" fontFamily={MONO} fontSize="12" fill="#d3f52c">iomete</text>
         <Badge x={405} y={8} n="1" dark />
         <text x="655" y="30" fontFamily={MONO} fontSize="12" fill="#8e8e8c" letterSpacing=".06em">ONE HELM CHART</text>
-        <circle cx="660" cy="46" r="4" fill="#c07a2c" />
-        <text x="670" y="50" fontFamily={BODY} fontSize="13" fill="#5a5f59">~25 min cloud install, IOMETE says</text>
+        <text x="670" y="50" fontFamily={BODY} fontSize="13" fill="#5a5f59">~25 min cloud install</text>
       </Hit>
 
       {/* Your Kubernetes frame */}
@@ -177,12 +176,11 @@ function Narrow({ onPick }: { onPick: Pick }) {
           <path d="M0 0 10 5 0 10z" fill="#2d382d" />
         </marker>
       </defs>
-      <Hit id="deploy.time" onPick={onPick} label="Helm chart install: about 25 minutes, IOMETE says" className="wgi-a wgi-helm" d={0}>
+      <Hit id="deploy.time" onPick={onPick} label="Helm chart install: about 25 minutes" className="wgi-a wgi-helm" d={0}>
         <rect x="70" y="10" width="220" height="48" rx="12" fill="#202020" />
         <text x="180" y="40" textAnchor="middle" fontFamily={MONO} fontSize="15" fill="#fff">helm install <tspan fill="#d3f52c">iomete</tspan></text>
         <Badge x={70} y={10} n="1" dark />
-        <circle cx="196" cy="88" r="4" fill="#c07a2c" />
-        <text x="206" y="92" fontFamily={BODY} fontSize="13" fill="#5a5f59">~25 min, IOMETE says</text>
+        <text x="206" y="92" fontFamily={BODY} fontSize="13" fill="#5a5f59">~25 min</text>
       </Hit>
       <path className="wgi-draw" style={st(0.3)} d="M180 58 V126" stroke="#2d382d" strokeWidth="1.6" fill="none" markerEnd="url(#wgi-arr-n)" pathLength={1} />
 

@@ -79,6 +79,10 @@ const VAULTS: V[] = [
 ];
 
 function Evidence({ id, x, y, anchor = "start", fill = C.ink2, size = 13 }: { id: string; x: number; y: number; anchor?: "start" | "end"; fill?: string; size?: number }) {
+  // evidence marks are no longer drawn on the page
+  void id; void x; void y; void anchor; void fill; void size;
+  return null;
+  // eslint-disable-next-line no-unreachable
   const st = factById[id]?.state ?? "unknown";
   const col = st === "documented" ? C.documented : st === "claimed" ? C.claimed : C.unknown;
   const word = st === "documented" ? "documented" : st === "claimed" ? "IOMETE claims" : "not public";
@@ -266,11 +270,11 @@ export function WhereDataGoes({ onPick }: { onPick: Pick }) {
     <figure ref={ref} className={`visual wdg${seen ? " in" : ""}`}>
       <Wide onPick={onPick} motion={motion} />
       <Tall onPick={onPick} motion={motion} />
-      <figcaption className="wdg-hint">Only two arrows cross the line. Tap either one to read the licence clause behind it.</figcaption>
+      <figcaption className="wdg-hint">Only two arrows cross the line, and both are written into the licence.</figcaption>
       <div className="tiles">
         <Tile id="what.not-saas" label="IOMETE does not host your data" onPick={onPick} />
         <Tile id="sec.at-rest" label="IOMETE does not hold your keys" onPick={onPick} />
-        <Tile id="sec.telemetry" label="Usage data may leave" onPick={onPick} />
+        <Tile id="sec.telemetry" label="Only logs and metrics leave, never your data" onPick={onPick} />
         <Tile id="sec.support-access" label="Support only if a contract allows" onPick={onPick} />
       </div>
     </figure>

@@ -4,12 +4,10 @@ import { flushSync } from "react-dom";
 import { PERSONAS } from "@/content/personas";
 import { INTENTS, intentBySlug, intentFor, sectionsFor, type Intent } from "@/content/intents";
 import { TEASERS } from "@/content/teasers";
-import { CHECKED_AT, FACTS, factById } from "@/lib/facts";
 import type { Answer } from "@/lib/types";
 import Landing from "./Landing";
 import { Icon } from "./QuestionIcon";
-import { VISUALS, Dot } from "./Visuals";
-import { EvidenceBar, Statements } from "./Statements";
+import { VISUALS } from "./Visuals";
 import { BotDock, ask, type Turn } from "./Bot";
 
 function readIntent(): Intent | null {
@@ -30,17 +28,6 @@ const NEXT_Q: Record<string, string> = {
   "what-gets-installed": "how-hard-to-run",
   "how-hard-to-run": "what-gets-installed",
 };
-
-/** Which questions this visitor has opened, for this browser tab only. */
-const SEEN_KEY = "iomete.seen";
-function loadSeen(): string[] {
-  try { const v = JSON.parse(sessionStorage.getItem(SEEN_KEY) || "[]"); return Array.isArray(v) ? v.filter((s) => intentBySlug[s]) : []; }
-  catch { return []; }
-}
-function saveSeen(s: string[]) {
-  try { sessionStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch { /* storage blocked: progress just isn't remembered */ }
-}
-
 
 /** Swap page content inside a View Transition when the browser has one, so pages crossfade instead of flashing. */
 type VT = { skipTransition: () => void; finished: Promise<void> };
@@ -71,19 +58,16 @@ function useClickThroughTransitions() {
   }, []);
 }
 
-function Progress({ current, seen, go }: { current: string; seen: string[]; go: (i: Intent) => void }) {
-  const idx = INTENTS.findIndex((i) => i.slug === current);
+function Progress({ current, go }: { current: string; go: (i: Intent) => void }) {
   return (
     <nav className="qrail" aria-label="The six questions">
-      <span className="qrail-count">Question {idx + 1} of {INTENTS.length}</span>
       <ol>
         {INTENTS.map((i) => {
           const here = i.slug === current;
-          const was = seen.includes(i.slug);
           return (
-            <li key={i.slug} className={here ? "here" : was ? "seen" : ""}>
+            <li key={i.slug} className={here ? "here" : ""}>
               <button onClick={() => go(i)} aria-current={here ? "page" : undefined}
-                aria-label={`${i.question}${here ? " (this page)" : was ? " (seen)" : ""}`} title={i.question} disabled={here}>
+                aria-label={`${i.question}${here ? " (this page)" : ""}`} title={i.question} disabled={here}>
                 <Icon slug={i.slug} />
               </button>
             </li>
@@ -99,10 +83,7 @@ export default function Experience({ initial }: { initial: string | null }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const [highlight, setHighlight] = useState<string | undefined>();
   const [pending, setPending] = useState<{ atom?: string; fact?: string } | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [seen, setSeen] = useState<string[]>([]);
   useClickThroughTransitions();
 
   useEffect(() => {
@@ -111,26 +92,15 @@ export default function Experience({ initial }: { initial: string | null }) {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  // remember every question opened in this tab
-  useEffect(() => {
-    const s = loadSeen();
-    const next = intent && !s.includes(intent.slug) ? [...s, intent.slug] : s;
-    if (next !== s) saveSeen(next);
-    setSeen(next);
-  }, [intent]);
-
-  const hlTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const intentRef = useRef(intent);
   intentRef.current = intent;
   const go = useCallback((next: Intent | null, target?: { atom?: string; fact?: string }) => {
     if (intentRef.current?.slug !== next?.slug) {
       window.history.pushState({}, "", next ? `/?v=${next.slug}` : "/");
       transition(() => {
-        // a new page starts folded, unless we are about to point at one of its statements
-        setDetailsOpen(!!target?.fact);
         setIntent(next);
-        // a new page starts at its top; a pointed-at statement scrolls below
-        if (!target?.fact && !target?.atom) window.scrollTo(0, 0);
+        // a new page starts at its top; a pointed-at section scrolls below
+        if (!target?.atom) window.scrollTo(0, 0);
         else setPending(target);
       });
       return;
@@ -141,25 +111,17 @@ export default function Experience({ initial }: { initial: string | null }) {
 
   useEffect(() => {
     if (!pending) return;
-    if (pending.fact && !detailsOpen) { setDetailsOpen(true); return; }
     const t = setTimeout(() => {
-      const el =
-        (pending.fact && document.getElementById(`fact-${pending.fact}`)) ||
-        (pending.atom && document.getElementById(`atom-${pending.atom}`));
+      const el = pending.atom && document.getElementById(`atom-${pending.atom}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      else window.scrollTo({ top: 0, behavior: "smooth" });
-      if (pending.fact) {
-        setHighlight(pending.fact);
-        // one timer at a time, so an older highlight cannot clear a newer one
-        clearTimeout(hlTimer.current);
-        hlTimer.current = setTimeout(() => setHighlight(undefined), 4000);
-      }
+      else if (pending.atom) window.scrollTo({ top: 0, behavior: "smooth" });
       setPending(null);
     }, 80);
     return () => clearTimeout(t);
-  }, [pending, intent, detailsOpen]);
+  }, [pending, intent]);
 
-  const pick = useCallback((factId: string) => setPending({ fact: factId }), []);
+  // the evidence list is gone from the page, so tapping a picture no longer jumps anywhere
+  const pick = useCallback((_factId: string) => {}, []);
 
   const show = useCallback((a: Answer) => {
     if (a.action.type !== "navigate" || !a.action.persona) return;
@@ -184,9 +146,7 @@ export default function Experience({ initial }: { initial: string | null }) {
     }
   }, [intent, show]);
 
-  const sections = intent ? sectionsFor(intent) : [];
   const next = intent ? PERSONAS[intent.persona].next.filter((n) => !n.href.includes(`v=${intent.slug}`) || n.href.startsWith("/brief")) : [];
-  const seenCount = seen.length;
 
   return (
     <div className={`app${dockOpen ? " dock-open" : ""}`}>
@@ -194,13 +154,13 @@ export default function Experience({ initial }: { initial: string | null }) {
         <div className="wrap topbar-inner">
           <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); go(null); }}>
             <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" stroke="#2d382d" strokeWidth="1.5" /></svg>
-            <b>IOMETE</b><span>in plain words</span>
+            <b>IOMETE</b>
           </a>
           <nav className="topnav">
             {intent && (
               <button className="topnav-all" onClick={() => go(null)}>
                 <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><g fill="currentColor"><rect x="0" y="0" width="6" height="6" rx="1.5" /><rect x="8" y="0" width="6" height="6" rx="1.5" /><rect x="0" y="8" width="6" height="6" rx="1.5" /><rect x="8" y="8" width="6" height="6" rx="1.5" /></g></svg>
-                <span>All questions</span>{seenCount > 0 && <small>{seenCount}/{INTENTS.length}</small>}
+                <span>All questions</span>
               </button>
             )}
             <button className="btn btn-lime btn-sm" onClick={() => setDockOpen(true)} aria-expanded={dockOpen}>Ask a question</button>
@@ -216,44 +176,34 @@ export default function Experience({ initial }: { initial: string | null }) {
             {(() => {
               return (
                 <div className="a-head">
-                  <Progress current={intent.slug} seen={seen} go={go} />
+                  <Progress current={intent.slug} go={go} />
                   <h1>{intent.question}</h1>
                   <p className="q-answer" title={intent.answer}><span className="hook">{intent.hook}</span></p>
                 </div>
               );
             })()}
             {(() => { const V = VISUALS[intent.slug]; return <V onPick={pick} />; })()}
-            <Statements atoms={sections} open={detailsOpen} setOpen={setDetailsOpen} highlight={highlight} />
             {(() => {
               const nx = intentBySlug[NEXT_Q[intent.slug]];
               const t = TEASERS[nx.slug];
-              const tf = t && factById[t.fact];
               const others = INTENTS.filter((i) => i.slug !== intent.slug && i.slug !== nx.slug);
-              const left = INTENTS.filter((i) => !seen.includes(i.slug)).length;
               return (
                 <nav className="nextup" aria-label="Where to go next">
                   <div className="nextup-head">
                     <p className="nextup-hook">Usually asked next</p>
-                    <p className="nextup-progress" aria-live="polite">
-                      {left === 0 ? "You have seen all six questions." : `${INTENTS.length - left} of ${INTENTS.length} seen`}
-                      <span className="pbar" aria-hidden="true">{INTENTS.map((i) => <i key={i.slug} className={seen.includes(i.slug) ? "on" : ""} />)}</span>
-                    </p>
                   </div>
                   <button className="nextup-main" onClick={() => go(nx)}>
                     <span className="nm-icon"><Icon slug={nx.slug} /></span>
                     {t && <span className="nm-big">{t.big}</span>}
                     <span className="nm-q">{nx.question}</span>
-                    {t && tf?.state === "claimed" && <span className="nm-line"><Dot state={tf.state} />IOMETE says</span>}
                     <span aria-hidden="true" className="arrow">→</span>
-                    {seen.includes(nx.slug) && <span className="nm-seen">Seen</span>}
                   </button>
                   <div className="more">
                     {others.map((i) => {
                       const ti = TEASERS[i.slug];
-                      const was = seen.includes(i.slug);
                       return (
-                        <button key={i.slug} onClick={() => go(i)} className={was ? "seen" : ""}>
-                          <span className="mo-top"><Icon slug={i.slug} />{was && <span className="mo-seen">Seen</span>}</span>
+                        <button key={i.slug} onClick={() => go(i)}>
+                          <span className="mo-top"><Icon slug={i.slug} /></span>
                           {ti && <span className="mo-big">{ti.big}</span>}
                           <span className="mo-q">{i.question}</span>
                         </button>
@@ -286,8 +236,7 @@ export default function Experience({ initial }: { initial: string | null }) {
 
       <footer className="footer">
         <div className="wrap footer-row">
-          <p className="footer-brand"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" /></svg><b>IOMETE</b> in plain words</p>
-          <p className="footer-note">Unofficial · not affiliated with IOMETE · {FACTS.length} sourced statements, checked {CHECKED_AT}</p>
+          <p className="footer-brand"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" fill="#d3f52c" /></svg><b>IOMETE</b></p>
           <p className="footer-links"><a href="https://iomete.com" target="_blank" rel="noreferrer">iomete.com ↗</a><a href="https://iomete.com/resources" target="_blank" rel="noreferrer">Docs ↗</a></p>
         </div>
       </footer>

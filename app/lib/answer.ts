@@ -159,20 +159,92 @@ const SCHEMA = {
   },
 } as const;
 
+type Engine = "claude" | "gemini" | "retrieval";
+type Composed = { answer: string; cited_fact_ids: string[]; cited_passage_ids: string[]; best_fact_id: string | null };
+
 let client: Anthropic | null | undefined;
 function getClient() {
   if (client !== undefined) return client;
   const hasCreds = !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_PROFILE);
-  client = hasCreds && process.env.BOT_ENGINE !== "retrieval" ? new Anthropic() : null;
+  client = hasCreds ? new Anthropic() : null;
   return client;
 }
-export const claudeEnabled = () => !!getClient();
+const geminiKey = () => process.env.GEMINI_API_KEY || process.env.GEMINI || "";
+
+// Which engine composes the answer. BOT_ENGINE forces one; otherwise Gemini if its key is set, then Claude, then retrieval.
+export function activeEngine(): Engine {
+  const forced = process.env.BOT_ENGINE;
+  if (forced === "retrieval") return "retrieval";
+  if (forced === "gemini") return geminiKey() ? "gemini" : "retrieval";
+  if (forced === "claude") return getClient() ? "claude" : "retrieval";
+  if (geminiKey()) return "gemini";
+  if (getClient()) return "claude";
+  return "retrieval";
+}
+
+async function composeWithClaude(c: Anthropic, userMsg: string): Promise<Composed | null> {
+  const res = await c.beta.messages.create({
+    model: process.env.BOT_MODEL || "claude-opus-5-5",
+    max_tokens: 2000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    system: SYSTEM,
+    output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
+    messages: [{ role: "user", content: userMsg }],
+  } as never) as unknown as Anthropic.Beta.BetaMessage;
+  if (res.stop_reason === "refusal") return null;
+  const text = res.content.find((b) => b.type === "text");
+  if (!text || text.type !== "text") return null;
+  return JSON.parse(text.text) as Composed;
+}
+
+// Gemini returns its answer as a plain JSON string (responseMimeType json, no schema), which the code parses and checks.
+const GEMINI_FORMAT = `
+Output format: reply with one JSON object as a string and nothing else, no code fences, with exactly these keys:
+{"answer": string, "cited_fact_ids": string[], "cited_passage_ids": string[], "best_fact_id": string | null}
+best_fact_id is the one FACT id that directly answers the question (null only if no fact answers it).
+cited_fact_ids may only contain ids shown in FACTS (e.g. price.enterprise); cited_passage_ids may only contain ids shown in PASSAGES (e.g. P1).`;
+
+function parseJsonString(text: string): Partial<Composed> {
+  const t = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  const first = t.indexOf("{");
+  const last = t.lastIndexOf("}");
+  return JSON.parse(first >= 0 && last > first ? t.slice(first, last + 1) : t) as Partial<Composed>;
+}
+
+async function composeWithGemini(userMsg: string): Promise<Composed | null> {
+  const model = process.env.BOT_MODEL || "gemini-3.7-flash";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": geminiKey() },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM + "\n" + GEMINI_FORMAT }] },
+      contents: [{ role: "user", parts: [{ text: userMsg }] }],
+      generationConfig: { temperature: 0, maxOutputTokens: 2000, responseMimeType: "application/json" },
+    }),
+    signal: AbortSignal.timeout(25000),
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const j = (await res.json()) as { candidates?: { finishReason?: string; content?: { parts?: { text?: string }[] } }[] };
+  const cand = j.candidates?.[0];
+  if (!cand || cand.finishReason === "SAFETY") return null;
+  const text = cand.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
+  if (!text) return null;
+  const out = parseJsonString(text);
+  return {
+    answer: String(out.answer ?? ""),
+    cited_fact_ids: Array.isArray(out.cited_fact_ids) ? out.cited_fact_ids.map(String) : [],
+    cited_passage_ids: Array.isArray(out.cited_passage_ids) ? out.cited_passage_ids.map(String) : [],
+    best_fact_id: typeof out.best_fact_id === "string" ? out.best_fact_id : null,
+  };
+}
 
 export async function answer(q: string, current?: PersonaId): Promise<Answer> {
   const fallback = retrievalAnswer(q, current);
-  const c = getClient();
+  const engine = activeEngine();
   const isIntro = fallback.action.type === "navigate" && !fallback.action.atom && fallback.text.startsWith("Start with");
-  if (!c || isIntro) return fallback;
+  if (engine === "retrieval" || isIntro) return fallback;
   const persona = detectPersona(q) ?? current;
   const terms = weightedTerms(q);
   const facts = factIndex.search(terms, 8).map((x) => x.item);
@@ -191,20 +263,8 @@ export async function answer(q: string, current?: PersonaId): Promise<Answer> {
   ].join("\n");
 
   try {
-    const res = await c.beta.messages.create({
-      model: process.env.BOT_MODEL || "claude-opus-5-5",
-      max_tokens: 2000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      system: SYSTEM,
-      output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      messages: [{ role: "user", content: userMsg }],
-    } as never) as unknown as Anthropic.Beta.BetaMessage;
-
-    if (res.stop_reason === "refusal") return fallback;
-    const text = res.content.find((b) => b.type === "text");
-    if (!text || text.type !== "text") return fallback;
-    const out = JSON.parse(text.text) as { answer: string; cited_fact_ids: string[]; cited_passage_ids: string[]; best_fact_id: string | null };
+    const out = engine === "gemini" ? await composeWithGemini(userMsg) : await composeWithClaude(getClient()!, userMsg);
+    if (!out) return fallback;
 
     const validFacts = out.cited_fact_ids.filter((id) => facts.some((f) => f.id === id));
     const validPassages = passages.filter((p) => out.cited_passage_ids.includes(p.pid));
@@ -218,8 +278,10 @@ export async function answer(q: string, current?: PersonaId): Promise<Answer> {
       ...validFacts.map((id) => factById[id].state),
       ...validPassages.map((p) => (p.chunk.tier <= 3 ? "documented" : "claimed") as State),
     ];
-    const state = states.length ? mostCautious(states) : "unknown";
     const focus = out.best_fact_id && validFacts.includes(out.best_fact_id) ? out.best_fact_id : validFacts[0];
+    // The mark follows the fact that answers the question. Supporting citations (a marketing passage, a
+    // "not public" caveat) no longer drag a documented answer down to claimed or unknown.
+    const state: State = focus ? factById[focus].state : states.length ? mostCautious(states) : "unknown";
     const loc = focus ? locateFact(focus, persona ?? undefined) : null;
     return {
       text: out.answer,
@@ -230,10 +292,10 @@ export async function answer(q: string, current?: PersonaId): Promise<Answer> {
         ...validPassages.map((p) => ({ url: p.chunk.url, title: p.chunk.title + (p.chunk.heading ? ` › ${p.chunk.heading}` : "") })),
       ].filter((s, i, a) => a.findIndex((x) => x.url === s.url) === i).slice(0, 3),
       action: loc ? { type: "navigate", persona: loc.persona, atom: loc.atom, fact: focus } : persona ? { type: "navigate", persona } : { type: "none" },
-      engine: "claude",
+      engine,
     };
   } catch (e) {
-    console.error("[ask] Claude call failed, using retrieval:", e instanceof Error ? e.message : e);
+    console.error(`[ask] ${engine} call failed, using retrieval:`, e instanceof Error ? e.message : e);
     return fallback;
   }
 }

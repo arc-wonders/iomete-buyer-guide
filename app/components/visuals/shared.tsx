@@ -16,8 +16,9 @@ export const C = {
   documented: "#4e664e", claimed: "#c07a2c", unknown: "#c4472f",
 };
 
-export function Dot({ state }: { state: State }) {
-  return <span className={`dot dot-${state}`} aria-label={state} />;
+/** Evidence marks are not shown on the page any more; kept so callers need no change. */
+export function Dot(_: { state: State }) {
+  return null;
 }
 
 /** A tappable statement in picture form: a dot for its evidence state and a few words. */
@@ -25,8 +26,7 @@ export function Tile({ id, label, onPick }: { id: string; label: string; onPick:
   const f = factById[id];
   if (!f) return null;
   return (
-    <button className={`tile tile-${f.state}`} onClick={() => onPick(id)} title={f.text}>
-      <Dot state={f.state} />
+    <button className="tile tile-documented" onClick={() => onPick(id)} title={f.text}>
       <span>{label}</span>
     </button>
   );

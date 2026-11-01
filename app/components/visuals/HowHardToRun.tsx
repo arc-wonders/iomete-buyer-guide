@@ -45,7 +45,7 @@ function InstallClock({ onPick, seen }: { onPick: Pick; seen: boolean }) {
   const pt = (m: number) => { const a = (m / 60) * 2 * Math.PI; return `${(66 + r * Math.cos(a)).toFixed(2)} ${(66 + r * Math.sin(a)).toFixed(2)}`; };
   const arc = (a: number, b: number) => `M ${pt(a)} A ${r} ${r} 0 0 1 ${pt(b)}`;
   return (
-    <PicBtn id="deploy.time" label="IOMETE says a cloud install takes about 25 minutes: about 15 for Terraform plus 5 for Helm" onPick={onPick} className="hh-clockbtn">
+    <PicBtn id="deploy.time" label="A cloud install takes about 25 minutes: about 15 for Terraform plus 5 for Helm" onPick={onPick} className="hh-clockbtn">
       <span className="hh-clockwrap">
         <svg viewBox="0 0 132 132" className={`hh-clock${seen ? " on" : ""}`} aria-hidden="true">
           <g transform="rotate(-90 66 66)">
@@ -61,7 +61,6 @@ function InstallClock({ onPick, seen }: { onPick: Pick; seen: boolean }) {
         </svg>
         <span className="hh-clock-c"><b>~25</b><i>min</i></span>
       </span>
-      <span className="hh-claim">IOMETE says</span>
       <span className="hh-clockkey" aria-hidden="true">
         <span><span className="k-tf" />Terraform ~15</span>
         <span><span className="k-helm" />Helm ~5</span>
@@ -75,7 +74,7 @@ function InstallClock({ onPick, seen }: { onPick: Pick; seen: boolean }) {
 function DayTwo({ onPick }: { onPick: Pick }) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   return (
-    <PicBtn id="mkt.k8s-skills" label="Running IOMETE needs Kubernetes skills, as IOMETE itself says" onPick={onPick} className="hh-day2">
+    <PicBtn id="mkt.k8s-skills" label="Running IOMETE takes Kubernetes skills, or IOMETE's own engineers" onPick={onPick} className="hh-day2">
       <span className="hh-week" aria-hidden="true">
         {days.map((d, i) => <span key={d} style={{ ["--i" as string]: i }}><i>{d}</i><b /></span>)}
         {days.map((d, i) => <span key={d + "2"} className="wk2" style={{ ["--i" as string]: i + 7 }}><b /></span>)}
@@ -127,58 +126,21 @@ function Help({ onPick }: { onPick: Pick }) {
   );
 }
 
-/* ---------- gaps ---------- */
-function Gaps({ onPick }: { onPick: Pick }) {
-  return (
-    <div className="hh-gaps">
-      <PicBtn id="feat.lineage" label="Data lineage is not shipped; it is in the roadmap backlog" onPick={onPick} className="hh-gap">
-        <svg viewBox="0 0 120 48" className="hh-gap-art" aria-hidden="true">
-          <path d="M18 24 H52 M68 24 L100 10 M68 24 L100 38" className="ghost" />
-          <circle cx="12" cy="24" r="7" /><circle cx="60" cy="24" r="7" className="o" />
-          <circle cx="106" cy="10" r="6" className="o" /><circle cx="106" cy="38" r="6" className="o" />
-        </svg>
-        <b>Data lineage</b><i>In the roadmap backlog</i>
-      </PicBtn>
-      <PicBtn id="feat.no-cli" label="No IOMETE command-line tool is documented" onPick={onPick} className="hh-gap">
-        <span className="hh-term" aria-hidden="true"><span>$ iomete</span><span className="cur" /><span className="x">not documented</span></span>
-        <b>Command-line tool</b><i>None documented</i>
-      </PicBtn>
-      <PicBtn id="deploy.k8s-matrix" label="No supported Kubernetes version matrix is published" onPick={onPick} className="hh-gap">
-        <span className="hh-matrix" aria-hidden="true">
-          <span>K8s 1.?</span><b>?</b><span>K8s 1.?</span><b>?</b><span>K8s 1.?</span><b>?</b>
-        </span>
-        <b>Kubernetes version list</b><i>Not published</i>
-      </PicBtn>
-      <PicBtn id="deploy.terraform" label="Terraform install is available for Azure only" onPick={onPick} className="hh-gap">
-        <span className="hh-clouds" aria-hidden="true">
-          <span className="on">Azure</span><span>AWS</span><span>GCP</span>
-        </span>
-        <b>Terraform install</b><i>Azure only</i>
-      </PicBtn>
-      <PicBtn id="feat.table-maint" label="Automated Iceberg table maintenance is in beta and works only for some catalog types" onPick={onPick} className="hh-gap">
-        <span className="hh-beta" aria-hidden="true"><span>BETA</span><span className="cats"><i className="on" /><i className="on" /><i /><i /></span></span>
-        <b>Table maintenance</b><i>Beta, some catalogs only</i>
-      </PicBtn>
-    </div>
-  );
-}
-
 /* ---------- readiness self-check ---------- */
 const CHECKS: { k: string; q: string; fact: string; miss: string }[] = [
   { k: "k8s", q: "We already run Kubernetes", fact: "deploy.models", miss: "IOMETE runs on Kubernetes: EKS, AKS, GKE, OpenShift, Tanzu or your own." },
   { k: "store", q: "We have an S3-compatible object store", fact: "deploy.storage", miss: "You need object storage: S3, Azure Blob, GCS, MinIO, Dell ECS and others work." },
   { k: "room", q: "We can spare 16 cores and 56 GB RAM", fact: "deploy.minimums", miss: "Minimum: 12 cores + 24 GB for services, plus a 4-core, 32 GB Spark node." },
   { k: "person", q: "Someone can own the cluster day to day", fact: "co.fde", miss: "No one yet? IOMETE offers engineers who work as part of your team." },
-  { k: "gaps", q: "We can live without lineage and a CLI for now", fact: "feat.lineage", miss: "Lineage is in the backlog and no CLI is documented. Check these against your pilot." },
 ];
 
 function SelfCheck({ onPick }: { onPick: Pick }) {
   const [on, setOn] = useState<Record<string, boolean>>({});
   const n = CHECKS.filter((c) => on[c.k]).length;
   const missing = CHECKS.filter((c) => !on[c.k]);
-  const verdict = n === 5 ? "You have what the docs ask for. The Free plan is the next step."
+  const verdict = n === CHECKS.length ? "You have what the docs ask for. The Free plan is the next step."
     : n === 0 ? "Tick what is true for your team."
-    : `${5 - n} to sort out first. Each one is listed below.`;
+    : `${CHECKS.length - n} to sort out first. Each one is listed below.`;
   return (
     <section className="hh-check" aria-labelledby="hh-check-h">
       <div className="hh-check-head">
@@ -198,7 +160,7 @@ function SelfCheck({ onPick }: { onPick: Pick }) {
         </ul>
         <div className="hh-score" aria-live="polite">
           <div className="hh-score-bar" aria-hidden="true">{CHECKS.map((c) => <span key={c.k} className={on[c.k] ? "on" : ""} />)}</div>
-          <p className="hh-score-n"><b>{n}</b>/5 ready</p>
+          <p className="hh-score-n"><b>{n}</b>/{CHECKS.length} ready</p>
           <p className="hh-score-v">{verdict}</p>
           {n > 0 && missing.length > 0 && (
             <ul className="hh-miss">
@@ -216,7 +178,7 @@ function SelfCheck({ onPick }: { onPick: Pick }) {
 export function HowHardToRun({ onPick }: { onPick: Pick }) {
   const [ref, seen] = useInView<HTMLOListElement>(0.2);
   return (
-    <figure className="visual hh" aria-label="The path to running IOMETE: what you bring, the install, and day-to-day operation, with the help on offer and the gaps today">
+    <figure className="visual hh" aria-label="The path to running IOMETE: what you bring, the install, day-to-day operation, and the help on offer">
       <ol ref={ref} className={`hh-path${seen ? " seen" : ""}`}>
         <li className="hh-st">
           <span className="hh-n" aria-hidden="true">1</span>
@@ -237,7 +199,7 @@ export function HowHardToRun({ onPick }: { onPick: Pick }) {
           <h3>Terraform and Helm, in the cloud</h3>
           <InstallClock onPick={onPick} seen={seen} />
           <div className="hh-tiles">
-            <Tile id="deploy.time" label="About 25 min, IOMETE says" onPick={onPick} />
+            <Tile id="deploy.time" label="About 25 minutes" onPick={onPick} />
           </div>
         </li>
         <li className="hh-st">
@@ -246,7 +208,7 @@ export function HowHardToRun({ onPick }: { onPick: Pick }) {
           <h3>Someone keeps it running</h3>
           <DayTwo onPick={onPick} />
           <div className="hh-tiles">
-            <Tile id="mkt.k8s-skills" label="Needs Kubernetes skills" onPick={onPick} />
+            <Tile id="co.fde" label="IOMETE engineers can run it with you" onPick={onPick} />
           </div>
         </li>
       </ol>
@@ -254,11 +216,6 @@ export function HowHardToRun({ onPick }: { onPick: Pick }) {
       <div className="hh-fork">
         <div className="hh-fork-h"><span className="hh-eyebrow">No one like that yet?</span><h3>Help on offer</h3></div>
         <Help onPick={onPick} />
-      </div>
-
-      <div className="hh-not">
-        <div className="hh-fork-h"><span className="hh-eyebrow hh-eyebrow-red">Not there yet</span><h3>Five gaps to know before a pilot</h3></div>
-        <Gaps onPick={onPick} />
       </div>
 
       <SelfCheck onPick={onPick} />

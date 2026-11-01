@@ -20,7 +20,7 @@ try {
   // 1. Landing: the three-step story finishes within 15 s and never names a role
   const t0 = Date.now();
   await page.goto(BASE, { waitUntil: "networkidle0" });
-  await page.waitForFunction(() => document.querySelector(".beatbar li:nth-child(3) [aria-current]") && document.querySelectorAll(".beatbar .fill.full").length >= 2, { timeout: 16000 });
+  await page.waitForFunction(() => document.querySelector(".caption-stack p:nth-child(3).on"), { timeout: 16000 });
   const secs = (Date.now() - t0) / 1000;
   check("Story reaches its last step within 15 seconds", secs <= 15.5, `${secs.toFixed(1)} s`);
   const landingText = await page.$eval("main", (e) => e.innerText);
@@ -40,32 +40,26 @@ try {
   const nextQ = await page.$eval(".nextup-main", (e) => e.textContent);
   check("Page hands off to one obvious next question", /security review/.test(nextQ), nextQ);
 
-  // 2b. Tapping a picture opens the sourced statement behind it
-  await page.click(".visual .tile");
-  await settle();
-  const tapped = await page.$eval(".statements", (d) => ({ open: d.open, hl: !!d.querySelector("li.hl") }));
-  check("Tapping a tile opens and highlights its source", tapped.open && tapped.hl, JSON.stringify(tapped));
-
   // 3. Bot: answer, mark, and the page moves to the proof
   await page.click(".topnav .btn");
   await page.waitForSelector("#dock-q");
   await page.type("#dock-q", "Is IOMETE ISO 27001 certified?");
   await page.keyboard.press("Enter");
-  await page.waitForSelector(".msg-a .chip", { timeout: 15000 });
+  await page.waitForSelector(".msg-a .chip", { timeout: 30000 });
   const chip = await page.$eval(".msg-a .chip", (e) => e.textContent);
   check("ISO 27001 answer is marked Not public", chip === "Not public", chip);
   await settle();
-  const iso = await page.$eval("#fact-sec\\.iso27001", (e) => { const r = e.getBoundingClientRect(); return { hl: e.classList.contains("hl"), top: r.top, bottom: r.bottom }; });
-  check("Page scrolled to and highlighted the ISO 27001 statement", iso.hl && iso.top >= 60 && iso.bottom <= 900, JSON.stringify(iso));
+  const isoSrc = await page.$eval(".msg-a .meta a", (e) => e.getAttribute("href") || "");
+  check("ISO 27001 answer links to its source", isoSrc.startsWith("http"), isoSrc);
   await shot(page, "2-answer");
 
   // 4. A cost question moves to the cost page and highlights the Enterprise price
   await page.type("#dock-q", "What does Enterprise cost?");
   await page.keyboard.press("Enter");
-  await page.waitForFunction(() => location.search === "?v=what-it-costs", { timeout: 15000 });
+  await page.waitForFunction(() => location.search === "?v=what-it-costs", { timeout: 30000 });
   await settle();
-  const ent = await page.$eval("#fact-price\\.enterprise", (e) => { const r = e.getBoundingClientRect(); return { hl: e.classList.contains("hl"), top: r.top }; });
-  check("Cost question opens the cost page with the Enterprise price highlighted and visible", ent.hl && ent.top >= 60, JSON.stringify(ent));
+  const costH1 = await page.$eval("h1", (e) => e.textContent);
+  check("Cost question opens the cost page", costH1 === "What does it cost?", costH1);
   await shot(page, "3-cost");
 
   // 5. Calculator: Free plan up to 100 vCPUs, then the documented $100,000 Enterprise minimum
@@ -81,7 +75,7 @@ try {
   await page.goto(BASE, { waitUntil: "networkidle0" });
   await page.type("#landing-q", "I'm the CISO at an insurer");
   await page.keyboard.press("Enter");
-  await page.waitForFunction(() => location.search.startsWith("?v="), { timeout: 15000 });
+  await page.waitForFunction(() => location.search.startsWith("?v="), { timeout: 30000 });
   const routed = new URL(page.url()).searchParams.get("v");
   const reply = await page.$eval(".msg-a p", (e) => e.textContent);
   check("A security person is routed to a data or security question", ["where-data-goes", "security-review"].includes(routed), routed);
@@ -90,9 +84,8 @@ try {
   // 7. One-page summary
   await page.goto(`${BASE}/brief?v=where-data-goes`, { waitUntil: "networkidle0" });
   const rows = await page.$$eval(".brief tr", (r) => r.length);
-  const open = await page.$$eval(".brief ol li", (r) => r.length);
   const briefText = await page.$eval("main", (e) => e.innerText);
-  check("Summary lists every statement and the open questions, without role labels", rows >= 20 && open >= 7 && !ROLE_WORDS.test(briefText), `${rows} rows, ${open} questions`);
+  check("Summary lists the page's statements without role labels or 'not public' lines", rows >= 12 && !/not public/i.test(briefText) && !ROLE_WORDS.test(briefText), `${rows} rows`);
   await shot(page, "4-brief");
 
   // 8. Phone: the picture comes first

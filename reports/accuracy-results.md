@@ -1,10 +1,10 @@
 # Accuracy results
 
-Run 2026-11-01 06:06 UTC against http://localhost:3400. Engine: **retrieval**. Corpus: 392 pages, 4717 chunks, fetched 2026-10-31.
+Run 2026-11-01 08:31 UTC against http://localhost:3107. Engine: **gemini**. Corpus: 392 pages, 4717 chunks, fetched 2026-10-31.
 
 | Measure | Result |
 |---|---|
-| Question runs correct | 145 / 145 |
+| Question runs correct | 144 / 145 |
 | Confident wrong answers (said documented when the truth is unknown) | 0 |
 | Refusal guard unit tests | 21 / 21 |
 
@@ -13,14 +13,14 @@ Run 2026-11-01 06:06 UTC against http://localhost:3400. Engine: **retrieval**. C
 | Question | Expected | Got (first run) | Correct runs |
 |---|---|---|---|
 | What does Enterprise cost? | documented · price.enterprise | documented · price.enterprise · route ceo | 5/5 |
-| Which Kubernetes distributions are supported? | documented · deploy.models | documented · deploy.models · route fde | 5/5 |
+| Which Kubernetes distributions are supported? | documented · deploy.models | documented · deploy.k8s-matrix · route fde | 5/5 |
 | Does it work with Okta? | documented · sec.sso | documented · sec.sso · route cro | 5/5 |
 | Can IOMETE staff see our data? | documented · sec.support-access | documented · sec.support-access · route cro | 5/5 |
 | Does it phone home? | documented · sec.telemetry | documented · sec.telemetry · route cro | 5/5 |
 | Does it have data lineage? | documented · feat.lineage | documented · feat.lineage · route fde | 5/5 |
 | Is IOMETE open source? | documented · what.license | documented · what.license · route ceo | 5/5 |
 | What version is current? | documented · arch.version | documented · arch.version · route fde | 5/5 |
-| Does it support Delta Lake? | documented | documented · - | 5/5 |
+| Does it support Delta Lake? | documented | documented · - | 4/5 |
 | Can it run air-gapped? | claimed · deploy.airgap | claimed · deploy.airgap · route fde | 5/5 |
 | Is it cheaper than Databricks? | claimed · price.savings | claimed · price.savings · route ceo | 5/5 |
 | How long does install take? | claimed · deploy.time | claimed · deploy.time · route fde | 5/5 |

@@ -53,6 +53,6 @@ export interface Answer {
   factIds: string[];
   sources: { url: string; title: string; quote?: string }[];
   action: { type: "navigate" | "none"; persona?: PersonaId; atom?: string; fact?: string };
-  engine: "claude" | "retrieval";
+  engine: "claude" | "gemini" | "retrieval";
   guard?: string[];
 }

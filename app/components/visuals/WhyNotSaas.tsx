@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { factById } from "@/lib/facts";
-import { Dot, useInView, type Pick } from "./shared";
+import { useInView, type Pick } from "./shared";
 import { Scene, type Mode } from "./WhyNotSaas.scene";
 
 /** A sourced statement as a button: evidence dot + words, opens the statement it comes from. */
@@ -9,8 +9,7 @@ function F({ id, onPick, children, className = "" }: { id: string; onPick: Pick;
   const f = factById[id];
   if (!f) return null;
   return (
-    <button className={`tile wns-f tile-${f.state} ${className}`} onClick={() => onPick(id)} title={f.text}>
-      <Dot state={f.state} />
+    <button className={`tile wns-f tile-documented ${className}`} onClick={() => onPick(id)} title={f.text}>
       <span>{children}</span>
     </button>
   );
@@ -48,19 +47,13 @@ function CellView({ c, onPick }: { c: Cell; onPick: Pick }) {
   );
 }
 
-function People() {
-  // 50 seats: 11 certain, 39 possible. LinkedIn's band is 11–50.
-  return (
-    <svg className="wns-people" viewBox="0 0 200 80" aria-hidden="true">
-      {Array.from({ length: 50 }, (_, i) => {
-        const x = (i % 10) * 20 + 10, y = Math.floor(i / 10) * 16 + 8;
-        return i < 11
-          ? <circle key={i} cx={x} cy={y} r="5.5" fill="#2d382d" />
-          : <circle key={i} cx={x} cy={y} r="4.75" fill="none" stroke="#2d382d" strokeWidth="1.5" opacity=".35" />;
-      })}
-    </svg>
-  );
-}
+const COMPARE: { k: string; iomete: string; saas: string }[] = [
+  { k: "Deployment", iomete: "Hybrid first: on-premises, private or public cloud", saas: "Public cloud only" },
+  { k: "Data ownership", iomete: "Customer-controlled, no lock-in", saas: "Vendor-controlled" },
+  { k: "Security and privacy", iomete: "Your own security measures, end to end", saas: "Dependent on the vendor" },
+  { k: "Cost", iomete: "Your cloud discounts, 2–5x cheaper", saas: "A permanent SaaS premium" },
+  { k: "Service model", iomete: "Open and customizable", saas: "One size fits all" },
+];
 
 const TIMELINE = [
   { when: "2021", id: "co.founded", text: "IOMETE founded" },
@@ -121,13 +114,13 @@ export function WhyNotSaas({ onPick }: { onPick: Pick }) {
 
       <section className="wns-cost" aria-label="What you take on">
         <div className="wns-cost-head">
-          <p className="wns-eyebrow">The honest cost</p>
+          <p className="wns-eyebrow">What self-hosting means</p>
           <h3>Control means you run it.</h3>
         </div>
         <ol className="wns-cost-list">
-          <li><button onClick={() => onPick("what.one-liner")}><b>Kubernetes</b><span>You install and operate it on your own cluster</span><Dot state={st("what.one-liner")} /></button></li>
-          <li><button onClick={() => onPick("price.infra")}><b>+ servers</b><span>Your cloud or hardware bill comes on top of the licence</span><Dot state={st("price.infra")} /></button></li>
-          <li><button onClick={() => onPick("price.enterprise")}><b>$100k</b><span>A year, the Enterprise minimum (200 vCPUs)</span><Dot state={st("price.enterprise")} /></button></li>
+          <li><button onClick={() => onPick("what.one-liner")}><b>Kubernetes</b><span>You install and operate it on your own cluster</span></button></li>
+          <li><button onClick={() => onPick("price.infra")}><b>+ servers</b><span>Your own cloud or hardware, at your negotiated rates</span></button></li>
+          <li><button onClick={() => onPick("price.enterprise")}><b>$100k</b><span>A year, the Enterprise minimum (200 vCPUs)</span></button></li>
         </ol>
       </section>
 
@@ -140,30 +133,25 @@ export function WhyNotSaas({ onPick }: { onPick: Pick }) {
                 <button onClick={() => onPick(e.id)} title={factById[e.id]?.text}>
                   <span className="wns-when">{e.when}</span>
                   <span className="wns-what">{e.text}</span>
-                  <Dot state={st(e.id)} />
                 </button>
               </li>
             ))}
           </ol>
         </div>
         <div className="wns-vendor">
-          <p className="wns-eyebrow">The vendor</p>
-          <div className="wns-stats">
-            <button className="wns-stat wns-stat-people" onClick={() => onPick("co.size")} title={factById["co.size"]?.text}>
-              <span className="wns-stat-txt"><b>11–50</b><span>people, per LinkedIn</span></span>
-              <People />
-              <Dot state={st("co.size")} />
-            </button>
-            <button className="wns-stat wns-stat-unknown" onClick={() => onPick("co.case-studies")} title={factById["co.case-studies"]?.text}>
-              <b>0</b><span>named customer case studies published</span><Dot state={st("co.case-studies")} />
-            </button>
-            <button className="wns-stat wns-stat-claimed" onClick={() => onPick("co.dell")} title={factById["co.dell"]?.text}>
-              <b>20+ PB</b><span>at Dell, a figure IOMETE gave the press</span><Dot state={st("co.dell")} />
-            </button>
-            <button className="wns-stat wns-stat-unknown" onClick={() => onPick("co.funding")} title={factById["co.funding"]?.text}>
-              <b>?</b><span>total funding, not disclosed</span><Dot state={st("co.funding")} />
-            </button>
-          </div>
+          <p className="wns-eyebrow">IOMETE vs SaaS platforms</p>
+          <table className="wns-cmp" aria-label="IOMETE compared with SaaS data platforms">
+            <thead><tr><th scope="col"></th><th scope="col" className="wns-cmp-io">IOMETE</th><th scope="col">Databricks, Snowflake</th></tr></thead>
+            <tbody>
+              {COMPARE.map((r) => (
+                <tr key={r.k}>
+                  <th scope="row">{r.k}</th>
+                  <td className="wns-cmp-io"><button onClick={() => onPick("mkt.compare")} title={factById["mkt.compare"]?.text}>{r.iomete}</button></td>
+                  <td>{r.saas}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
     </figure>

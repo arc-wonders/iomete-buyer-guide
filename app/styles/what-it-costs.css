@@ -123,6 +123,7 @@
 /* ---------- next hooks ---------- */
 .v-what-it-costs .cost-more { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; margin-top: 28px; }
 .v-what-it-costs .cost-card { display: grid; align-content: start; gap: 16px; padding: 20px; border-radius: 16px; }
+.v-what-it-costs .cost-card-wide { grid-column: 1 / -1; }
 .v-what-it-costs .cost-card-h { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
 .v-what-it-costs .cost-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
 .v-what-it-costs .cost-steps li { position: relative; padding-top: 20px; font-size: .88rem; line-height: 1.3; color: var(--ink-3); }

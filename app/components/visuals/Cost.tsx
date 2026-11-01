@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Dot, Tile, useInView, type Pick } from "./shared";
+import { Dot, useInView, type Pick } from "./shared";
 import { CostChart, FLOOR_VCPU, FREE_MAX, PER_VCPU, X_MAX, licence, money, useTween, useWidth } from "./Cost.parts";
 
 export function Cost({ onPick }: { onPick: Pick }) {
@@ -37,10 +37,10 @@ export function Cost({ onPick }: { onPick: Pick }) {
             <span className="cost-big" aria-live="polite">{money(shown)}</span>
             <span className="cost-why"><Dot state="documented" /> {why}</span>
           </button>
-          <button className="cost-noq" onClick={() => onPick("price.no-per-query")} aria-label="IOMETE says there are no per-query or per-user fees">
+          <button className="cost-noq" onClick={() => onPick("price.no-per-query")} aria-label="No per-query or per-user fees">
             <span className="cost-noq-row"><b>$0</b><span>per query</span></span>
             <span className="cost-noq-row"><b>$0</b><span>per user</span></span>
-            <span className="cost-noq-src"><Dot state="claimed" /> IOMETE says</span>
+            <span className="cost-noq-src">No usage fees</span>
           </button>
         </div>
 
@@ -76,9 +76,9 @@ export function Cost({ onPick }: { onPick: Pick }) {
         </div>
       </div>
 
-      {/* what the bill really is: one known part, two honest unknowns */}
+      {/* the bill: a fixed licence plus the infrastructure you already pay for */}
       <div className="cost-bill" aria-label="Your yearly bill">
-        <p className="cost-bill-title">Your real yearly bill</p>
+        <p className="cost-bill-title">Your yearly bill</p>
         <div className="cost-bill-row">
           <button className="bill bill-known" style={{ ["--s" as string]: share }} onClick={() => onPick("price.enterprise")}>
             <span className="bill-tag"><Dot state="documented" /> IOMETE licence</span>
@@ -89,39 +89,22 @@ export function Cost({ onPick }: { onPick: Pick }) {
           <button className="bill bill-fog" onClick={() => onPick("price.infra")}>
             <span className="bill-tag"><Dot state="documented" /> Your infrastructure</span>
             <span className="bill-fogbar" aria-hidden="true"><i /></span>
-            <small>paid to your own cloud or hardware, not IOMETE</small>
-          </button>
-          <span className="bill-plus" aria-hidden="true">+</span>
-          <button className="bill bill-fog bill-unknown" onClick={() => onPick("price.support-cost")}>
-            <span className="bill-tag"><Dot state="unknown" /> Support &amp; onboarding</span>
-            <span className="bill-fogbar" aria-hidden="true"><i /></span>
-            <small>prices not published</small>
+            <small>paid to your own cloud or hardware, with your existing discounts</small>
           </button>
         </div>
       </div>
 
-      {/* the hooks that lead to the next question */}
+      {/* where the savings come from */}
       <div className="cost-more">
-        <button className="tile tile-documented cost-card" onClick={() => onPick("price.history")}>
-          <span className="cost-card-h"><Dot state="documented" /> Pricing changed 3 times since 2023</span>
-          <ol className="cost-steps" aria-label="per core per month, then per vCPU-hour, then per vCPU per year">
-            <li>per core<br />/ month</li>
-            <li>per<br />vCPU-hour</li>
-            <li className="now">per vCPU<br />/ year</li>
-          </ol>
-        </button>
-        <button className="tile tile-claimed cost-card" onClick={() => onPick("price.savings")}>
-          <span className="cost-card-h"><Dot state="claimed" /> IOMETE&rsquo;s savings claims vary by page</span>
+        <button className="tile tile-documented cost-card cost-card-wide" onClick={() => onPick("price.savings")}>
+          <span className="cost-card-h">Why it costs less than SaaS</span>
           <span className="cost-claims">
-            <span><b>2–5x</b><small>homepage</small></span>
-            <span><b>30–60%</b><small>FAQ</small></span>
-            <span><b>40–60%</b><small>blog, lower TCO</small></span>
-            <span className="odd"><b>~1%</b><small>one of its own worked examples</small></span>
+            <span><b>30–60%</b><small>lower cost than SaaS data platforms</small></span>
+            <span><b>0</b><small>vendor markup on your infrastructure</small></span>
+            <span><b>100%</b><small>of your cloud discounts and reserved instances apply</small></span>
+            <span><b>Spot</b><small>instances for non-critical workloads</small></span>
           </span>
         </button>
-        <div className="cost-tiles">
-          <Tile id="price.marketplace" label="Cloud marketplace listing: none found" onPick={onPick} />
-        </div>
       </div>
 
       <table className="sr-only">

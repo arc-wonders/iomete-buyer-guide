@@ -70,7 +70,7 @@ export function BotDock({
         <div className="dock-log" ref={logRef} aria-live="polite">
           {turns.length === 0 && (
             <>
-              <p className="empty-hint">Ask anything about IOMETE. Each answer says whether it is documented, an IOMETE claim, or not public, and the page moves to the proof.</p>
+              <p className="empty-hint">Ask anything about IOMETE. Every answer links to IOMETE's own documentation, pricing or licence, and the page moves to the matching section.</p>
               <div className="examples">
                 {EXAMPLES.map((x) => <button key={x} onClick={() => onAsk(x)}>{x}</button>)}
               </div>
